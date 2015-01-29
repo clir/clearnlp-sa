@@ -24,6 +24,7 @@ public class ParseWords2 {
 		ParseWords2 PSE = new ParseWords2();
 		PSE.parseRawScores(new FileInputStream(rawscores));
 		PSE.parseSentimentExpressions(new FileInputStream(sentexp));
+		System.out.println("done");
 	}
 
 	private void parseSentimentExpressions(FileInputStream in) throws IOException {
@@ -41,7 +42,7 @@ public class ParseWords2 {
 			currentString=nextString;
 		}
 		else{
-			System.out.println(""+currentIndex + "" + currentString);
+			//System.out.println(""+currentIndex + "" + currentString);
 			SentimentExpression.add(currentIndex, currentString);
 			currentIndex = nextIndex;
 			currentString= nextString;
@@ -54,9 +55,11 @@ public class ParseWords2 {
 	private void parseRawScores(FileInputStream in) throws IOException {
 	BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 	String line;
+	String[] split;
 	while ((line = reader.readLine()) != null) {
-	String[] split = line.split(" ");
+	split = line.split(" ");
 	double average = (Integer.parseInt(split[1])+Integer.parseInt(split[2])+Integer.parseInt(split[3]))/3;
+	System.out.println(Integer.parseInt(split[0])+" " +average );
 	SentimentExpression.addRawScore(Integer.parseInt(split[0]), average);
 	}
 }
