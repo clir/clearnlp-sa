@@ -1,12 +1,14 @@
 package ParseCorpus;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class Word {
+public class Word implements Serializable {
+	private static final long serialVersionUID = 844801659782414882L;
 	private Map<String,List<Integer>> sentimentListMap;
 	private List<Map<String,Double>> wordBuckets;
 	
