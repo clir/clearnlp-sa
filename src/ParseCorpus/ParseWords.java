@@ -20,9 +20,10 @@ public class ParseWords {
 	public void putWords(InputStream in, String pattern) throws Exception {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		String line;
+		Pattern regexpattern = Pattern.compile(pattern);
+		Matcher matches;
 		while ((line = reader.readLine()) != null) {
-			Pattern regexpattern = Pattern.compile(pattern);
-			Matcher matches = regexpattern.matcher(line);
+			matches = regexpattern.matcher(line);
 			while(matches.find()) {
 				String StringPair = matches.group();
 				StringPair = StringPair.replaceAll("\\(", "").replaceAll("\\)","");
