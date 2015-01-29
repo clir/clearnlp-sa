@@ -15,9 +15,6 @@ public class Word {
 		wordBuckets = new ArrayList<>();
 		wordBuckets.add(new HashMap<String, Double>());
 		wordBuckets.add(new HashMap<String, Double>());
-		wordBuckets.add(new HashMap<String, Double>());
-		wordBuckets.add(new HashMap<String, Double>());
-		wordBuckets.add(new HashMap<String, Double>());
 	}
 	
 	public void add(String word, int sentiment) {
@@ -62,26 +59,15 @@ public class Word {
 			}
 			double stdDev = Math.sqrt(temp.stream().mapToDouble(p->p).average().getAsDouble());
 //			double stdDev = 0;
-			if (average >= 0 && average < 1) {
+			if (average >= 0 && average <= 1) {
 				Map<String, Double> bucket = wordBuckets.get(0);
 				bucket.put(entry.getKey(), stdDev);
 			} 
-			if (average >= 1 && average < 2) {
+			else if (average >= 3 && average <= 4) {
 				Map<String, Double> bucket = wordBuckets.get(1);
 				bucket.put(entry.getKey(), stdDev);
-			} 
-			else if (average >= 2 && average < 3) {
-				Map<String, Double> bucket = wordBuckets.get(2);
-				bucket.put(entry.getKey(), stdDev);
-			} 
-			else if (average >= 3 && average < 4) {
-				Map<String, Double> bucket = wordBuckets.get(3);
-				bucket.put(entry.getKey(), stdDev);
 			}
-			else if (average == 4){
-				Map<String, Double> bucket = wordBuckets.get(4);
-				bucket.put(entry.getKey(), stdDev);
-			}
+			
 		}
 	}
 }
