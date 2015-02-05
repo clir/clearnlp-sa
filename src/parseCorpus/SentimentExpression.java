@@ -1,4 +1,4 @@
-package ParseCorpus;
+package parseCorpus;
 
 import java.util.HashMap;
 import java.util.Map;
