@@ -83,7 +83,7 @@ public class SentimentAnalyzer
 		for (int i = 0; i < buckets.size(); i++) {
 			Map<String, Double> bucket = buckets.get(i);
 			if (bucket.containsKey(node.getWordForm())) {
-				score = bucket.get(node.getWordForm());
+				score = bucket.get(node.getWordForm())-2;
 				break;
 			}
 		}
