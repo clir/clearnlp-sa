@@ -19,8 +19,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
-import parseCorpus.SentimentScore;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.reader.TSVReader;
@@ -30,50 +30,68 @@ import edu.emory.clir.clearnlp.reader.TSVReader;
  */
 public class SentimentAnalyzer
 {
-	public void read(InputStream in) throws Exception
+	private List<SentimentScore> scores;
+	
+	public SentimentAnalyzer() {
+		scores = new ArrayList<>();
+	}
+	public void read(InputStream in, List<Map<String, Double>> buckets) throws Exception
 	{
 		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6, 7);
 		DEPTree tree;
 		
 		reader.open(in);
-		
 		while ((tree = reader.next()) != null)
 		{
-			analyze(tree);
+			analyze(tree, buckets);
 		}
 	}
 	
-	public void analyze(DEPTree tree)
+	public void analyze(DEPTree tree, List<Map<String, Double>> buckets)
 	{
 		List<DEPNode> roots = tree.getRoots();
-		SentimentScore score = analyze(roots.get(0));
+		SentimentScore score = analyze(roots.get(0), buckets);
+		scores.add(score);
 	}
 	
-	private SentimentScore analyze(DEPNode head)
+	private SentimentScore analyze(DEPNode head, List<Map<String, Double>> buckets)
 	{
-		SentimentScore headScore = getScore(head);
+		SentimentScore headScore = getScore(head, buckets);
 		List<SentimentScore> childrenScores = new ArrayList<>();
 		
 		for (DEPNode child : head.getDependentList())
-			childrenScores.add(analyze(child));
+			childrenScores.add(analyze(child, buckets));
 
-		SentimentScore maxScore = Collections.max(childrenScores);
-		headScore.addScore(maxScore.getScore());
+		if (childrenScores.size() > 0) {
+			SentimentScore maxScore = Collections.max(childrenScores);
+			headScore.addScore(maxScore.getScore());
+			maxScore.setIntensity(0);
 		
-		maxScore.setIntensity(0);
-		
-		for (SentimentScore childScore : childrenScores)
-		{
-			if (Math.abs(childScore.getIntensity()) > Math.abs(maxScore.getIntensity()))
-				maxScore.set(childScore);
+			for (SentimentScore childScore : childrenScores)
+			{
+				if (Math.abs(childScore.getIntensity()) > Math.abs(maxScore.getIntensity()))
+					maxScore.set(childScore);
+			}
+			headScore.setScore(headScore.getScore() * maxScore.getScore());
 		}
-		
-		headScore.setScore(headScore.getScore() * maxScore.getScore());
 		return headScore;
 	}
 	
-	protected SentimentScore getScore(DEPNode node)
+	protected SentimentScore getScore(DEPNode node, List<Map<String, Double>> buckets)
 	{
-		return null;
+		double score = 2;
+		for (int i = 0; i < buckets.size(); i++) {
+			Map<String, Double> bucket = buckets.get(i);
+			if (bucket.containsKey(node.getWordForm())) {
+				score = bucket.get(node.getWordForm());
+				break;
+			}
+		}
+		return new SentimentScore(score, 1);
+		
+	}
+	
+	protected List<SentimentScore> getScores() {
+		return scores;
 	}
 }

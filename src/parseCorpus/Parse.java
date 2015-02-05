@@ -11,18 +11,27 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Parse {
+	
+	private Word words;
+	public Parse() {
+		words = new Word();
+	}
 
-	public static void main(String[] args) throws Exception {
+//	public static void main(String[] args) throws Exception {
+	public void parse() throws Exception {
 		String devFile = "src/Stanford Sentiment/trees/dev.txt";
 		String trainFile = "src/Stanford Sentiment/trees/train.txt";
-		Word words = new Word();
+		
 		parseStanfordTrees(words, new FileInputStream(trainFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
 		parseStanfordTrees(words, new FileInputStream(devFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
 		parseSubjectivity(words);
 		words.putInBuckets();
 		
 //		List<Map<String,Double>> wordBuckets = words.getWordBucket();
-		System.out.println("done");
+	}
+	
+	public Word getWords() {
+		return words;
 	}
 	public static void parseSubjectivity(Word words) throws Exception {
 		File file = new File("subjectivity.txt");
