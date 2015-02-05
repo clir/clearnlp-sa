@@ -12,10 +12,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 public class ParseSentence {
-
-	
-	
-	
 	
 	public static void main(String[] args) throws IOException{
 		String devFile = "dev.txt";

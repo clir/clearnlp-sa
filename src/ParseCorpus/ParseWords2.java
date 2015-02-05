@@ -42,7 +42,7 @@ public class ParseWords2 {
 			currentString=nextString;
 		}
 		else{
-			//System.out.println(""+currentIndex + "" + currentString);
+			System.out.println(""+currentIndex + "" + currentString);
 			SentimentExpression.add(currentIndex, currentString);
 			currentIndex = nextIndex;
 			currentString= nextString;
