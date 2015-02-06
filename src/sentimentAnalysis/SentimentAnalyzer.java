@@ -41,7 +41,6 @@ public class SentimentAnalyzer
 		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6, 7);
 		DEPTree tree;
 		
-		
 		//Each sentence is a tree. Call analyze on the tree (sentence)
 		reader.open(in);
 		while ((tree = reader.next()) != null)
@@ -76,9 +75,9 @@ public class SentimentAnalyzer
 		SentimentScore maxIntensity = new SentimentScore(0,0);
 		for( int i = 0; i < childrenScores.size(); i++ ) {
 			SentimentScore childScore = childrenScores.get(i);
-			if (Math.abs(childScore.getScore()) > Math.abs(maxScore.getScore())) 
+			if (Math.abs(childScore.getScore()-.5) > Math.abs(maxScore.getScore()-.5)) 
 				maxScore =  childScore;
-			if (Math.abs(childScore.getIntensity()) > Math.abs(maxIntensity.getIntensity()))
+			if (Math.abs(childScore.getIntensity()-.5) > Math.abs(maxIntensity.getIntensity()-.5))
 				maxIntensity = childScore;
 		}
 		//  head = (head + MaxScore(child))* MaxIntensity(children)
@@ -101,7 +100,6 @@ public class SentimentAnalyzer
 			}
 		}
 		return new SentimentScore(score, intensifier);
-		
 	}
 	
 	protected List<SentimentScore> getScores() {
