@@ -19,8 +19,8 @@ public class ParseWords2 {
 	}
 	
 	public static void main(String[] args) throws Exception{
-		String rawscores = "rawscores_exp12.txt";
-		String sentexp = "sentlex_exp12.txt";
+		String rawscores = "src/Stanford Sentiment/stanfordSentimentTreebankRaw/rawscores_exp12.txt";
+		String sentexp = "src/Stanford Sentiment/stanfordSentimentTreebankRaw/sentlex_exp12.txt";
 		ParseWords2 PSE = new ParseWords2();
 		PSE.parseRawScores(new FileInputStream(rawscores));
 		PSE.parseSentimentExpressions(new FileInputStream(sentexp));
@@ -29,8 +29,8 @@ public class ParseWords2 {
 
 	private void parseSentimentExpressions(FileInputStream in) throws IOException {
 	Scanner read = new Scanner(in);
-	int currentIndex,nextIndex;
-	String currentString,nextString;
+	int currentIndex;
+	String currentString;
 
 	while(read.hasNext()){
 	currentIndex=read.nextInt();
