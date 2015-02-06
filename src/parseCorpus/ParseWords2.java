@@ -32,23 +32,12 @@ public class ParseWords2 {
 	int currentIndex,nextIndex;
 	String currentString,nextString;
 
+	while(read.hasNext()){
 	currentIndex=read.nextInt();
 	currentString=read.nextLine();
-	while(read.hasNext()){
-		nextIndex=read.nextInt();
-		nextString=read.nextLine();
-		if(nextString.toLowerCase().contains(currentString.toLowerCase())){
-			currentIndex=nextIndex;
-			currentString=nextString;
-		}
-		else{
-			System.out.println(""+currentIndex + "" + currentString);
-			SentimentExpression.add(currentIndex, currentString);
-			currentIndex = nextIndex;
-			currentString= nextString;
-		}
+	SentimentExpression.add(currentIndex, currentString);
+	System.out.println(currentIndex+"" + "" +currentString);		
 	}
-	
 	}
 	
 
