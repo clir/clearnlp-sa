@@ -36,7 +36,7 @@ public class ParseWords2 {
 	currentIndex=read.nextInt();
 	currentString=read.nextLine();
 	SentimentExpression.add(currentIndex, currentString);
-	System.out.println(currentIndex+"" + "" +currentString);		
+	//System.out.println(currentIndex+"" + "" +currentString);		
 	}
 	}
 	
@@ -48,7 +48,7 @@ public class ParseWords2 {
 	while ((line = reader.readLine()) != null) {
 	split = line.split(" ");
 	double average = (Integer.parseInt(split[1])+Integer.parseInt(split[2])+Integer.parseInt(split[3]))/3;
-	System.out.println(Integer.parseInt(split[0])+" " +average );
+	//System.out.println(Integer.parseInt(split[0])+" " +average );
 	SentimentExpression.addRawScore(Integer.parseInt(split[0]), average);
 	}
 }

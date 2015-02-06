@@ -12,6 +12,7 @@ public class SentimentExpression {
 	}
 	public void add(int Index, String expression){
 		double average = rawScores.get(Index);
+		average = (average-1)/25;
 		sentimentExpression.put(expression,average);
 	}
 }

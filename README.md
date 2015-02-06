@@ -3,4 +3,6 @@ Sentiment Analysis
 
 User Stories:
 
-Normalize scores between 0 and 1
+Normalize scores between 0 and 1 - Johnny 
+Parsed All sentiment Expressoins - Johnny 
+
