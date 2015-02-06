@@ -19,8 +19,8 @@ public class ParseWords2 {
 	}
 	
 	public static void main(String[] args) throws Exception{
-		String rawscores = "rawscores_exp12.txt";
-		String sentexp = "sentlex_exp12.txt";
+		String rawscores = "src/Stanford Sentiment/stanfordSentimentTreebankRaw/rawscores_exp12.txt";
+		String sentexp = "src/Stanford Sentiment/stanfordSentimentTreebankRaw/sentlex_exp12.txt";
 		ParseWords2 PSE = new ParseWords2();
 		PSE.parseRawScores(new FileInputStream(rawscores));
 		PSE.parseSentimentExpressions(new FileInputStream(sentexp));
@@ -29,14 +29,14 @@ public class ParseWords2 {
 
 	private void parseSentimentExpressions(FileInputStream in) throws IOException {
 	Scanner read = new Scanner(in);
-	int currentIndex,nextIndex;
-	String currentString,nextString;
+	int currentIndex;
+	String currentString;
 
 	while(read.hasNext()){
 	currentIndex=read.nextInt();
 	currentString=read.nextLine();
 	SentimentExpression.add(currentIndex, currentString);
-	System.out.println(currentIndex+"" + "" +currentString);		
+	//System.out.println(currentIndex+"" + "" +currentString);		
 	}
 	}
 	
@@ -48,7 +48,7 @@ public class ParseWords2 {
 	while ((line = reader.readLine()) != null) {
 	split = line.split(" ");
 	double average = (Integer.parseInt(split[1])+Integer.parseInt(split[2])+Integer.parseInt(split[3]))/3;
-	System.out.println(Integer.parseInt(split[0])+" " +average );
+	//System.out.println(Integer.parseInt(split[0])+" " +average );
 	SentimentExpression.addRawScore(Integer.parseInt(split[0]), average);
 	}
 }

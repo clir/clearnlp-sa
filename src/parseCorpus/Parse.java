@@ -46,11 +46,11 @@ public class Parse {
 		    	lineScanner.next();
 		    	lineScanner.next();
 		    	String polarity = lineScanner.next();
-		    	int score = 0;
+		    	int score = 2;
 		    	if (polarity.substring(14).equals("positive"))
-		    		score = 4;
+		    		score = 0;
 		    	if (polarity.substring(14).equals("negative"))
-			    	score = 0;
+			    	score = 4;
 		    	words.add(word.substring(6), score);
 		    	lineScanner.close();
 		    }
