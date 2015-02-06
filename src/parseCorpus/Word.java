@@ -20,6 +20,7 @@ public class Word implements Serializable {
 	}
 	
 	public void add(String word, int sentiment) {
+		sentiment /= 4;
 		if(!sentimentListMap.containsKey(word))
 		{
 			List<Integer> tmp = new ArrayList<>();
@@ -52,6 +53,7 @@ public class Word implements Serializable {
 		return wordBuckets;
 	}
 	
+	//For every list of sentiments we find the stdDev and put it in bucket
 	public void putInBuckets() {
 		for (Entry<String, List<Integer>> entry : sentimentListMap.entrySet()) {
 			double average = getAverageSentiment(entry.getValue());
@@ -59,13 +61,13 @@ public class Word implements Serializable {
 			for (int sentiment : entry.getValue()) {
 				temp.add(Math.pow(sentiment-average,2));
 			}
+			
 			double stdDev = Math.sqrt(temp.stream().mapToDouble(p->p).average().getAsDouble());
-//			double stdDev = 0;
-			if (average >= 0 && average <= 1) {
+			if (average >= 0 && average <= .25) {
 				Map<String, Double> bucket = wordBuckets.get(0);
 				bucket.put(entry.getKey(), stdDev);
-			} 
-			else if (average >= 3 && average <= 4) {
+			}
+			else if (average >= .75 && average <= 1) {
 				Map<String, Double> bucket = wordBuckets.get(1);
 				bucket.put(entry.getKey(), stdDev);
 			}
