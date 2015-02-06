@@ -69,29 +69,30 @@ public class SentimentAnalyzer
 		//For each dependent(child) analyze recursively
 		for (DEPNode child : head.getDependentList())
 			childrenScores.add(analyze(child, buckets));
-		
 
-		//Find the maxscore in the list of children, add it the the parentScore (headScore) then find the greater intensifier and multiply it by the headscore 
-		// proceed to build up   (our model correct currently it is parent + MaxScore(child) * MaxScore(MaxInt(children)
-		if (childrenScores.size() > 0) {
-			SentimentScore maxScore = Collections.max(childrenScores);
-			headScore.addScore(maxScore.getScore());
-			maxScore.setIntensity(0);
-		
-			for (SentimentScore childScore : childrenScores)
-			{
-				if (Math.abs(childScore.getIntensity()) > Math.abs(maxScore.getIntensity()))
-					maxScore.set(childScore);
-			}
-			headScore.setScore(headScore.getScore() * maxScore.getScore());
+		// Find the absolute max score in the children, add it the parentScore (headScore) then find the greatest intensifier of the children and multiply it by the headscore 
+		// proceed to build up   (our model correct currently it is parent + MaxScore(child) * MaxScore(MaxInt(children) - Johnny
+		SentimentScore maxScore = new SentimentScore(0,0);
+		for( int i = 0; i < childrenScores.size(); i++ ) {
+			SentimentScore childrenScore = childrenScores.get(i);
+			if (Math.abs(childrenScore.getScore()) > Math.abs(maxScore.getScore())) 
+				maxScore =  childrenScore;
 		}
+		 
+		for (SentimentScore childScore : childrenScores)
+		{
+			if (Math.abs(childScore.getIntensity()) > Math.abs(maxScore.getIntensity()))
+				maxScore.set(childScore);
+		}
+		headScore.setScore(headScore.getScore() * maxScore.getScore());
+		
 		return headScore;
 	}
 	
 	//For the current node we find the score by getting the sentiment score from the bucket, we return the sentimentScore of the word with an intensifier
 	protected SentimentScore getScore(DEPNode node, List<Map<String, Double>> buckets)
 	{
-		double score = 2;
+		double score = 0;
 		int intensifier = 1;
 		if(node.getLabel().equals("neg")) intensifier = -1;
 		for (int i = 0; i < buckets.size(); i++) {
