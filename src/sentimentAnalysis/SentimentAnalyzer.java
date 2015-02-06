@@ -71,20 +71,18 @@ public class SentimentAnalyzer
 			childrenScores.add(analyze(child, buckets));
 
 		// Find the absolute max score in the children, add it the parentScore (headScore) then find the greatest intensifier of the children and multiply it by the headscore 
-		// proceed to build up   (our model correct currently it is parent + MaxScore(child) * MaxScore(MaxInt(children) - Johnny
+		// proceed to build up  - Johnny
 		SentimentScore maxScore = new SentimentScore(0,0);
+		SentimentScore maxIntensity = new SentimentScore(0,0);
 		for( int i = 0; i < childrenScores.size(); i++ ) {
-			SentimentScore childrenScore = childrenScores.get(i);
-			if (Math.abs(childrenScore.getScore()) > Math.abs(maxScore.getScore())) 
-				maxScore =  childrenScore;
+			SentimentScore childScore = childrenScores.get(i);
+			if (Math.abs(childScore.getScore()) > Math.abs(maxScore.getScore())) 
+				maxScore =  childScore;
+			if (Math.abs(childScore.getIntensity()) > Math.abs(maxIntensity.getIntensity()))
+				maxIntensity = childScore;
 		}
-		 
-		for (SentimentScore childScore : childrenScores)
-		{
-			if (Math.abs(childScore.getIntensity()) > Math.abs(maxScore.getIntensity()))
-				maxScore.set(childScore);
-		}
-		headScore.setScore(headScore.getScore() * maxScore.getScore());
+		//  head = (head + MaxScore(child))* MaxIntensity(children)
+		headScore.setScore((headScore.getScore() + maxScore.getScore())*maxIntensity.getIntensity());
 		
 		return headScore;
 	}
