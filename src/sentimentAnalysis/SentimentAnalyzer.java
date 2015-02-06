@@ -37,9 +37,12 @@ public class SentimentAnalyzer
 	}
 	public void read(InputStream in, List<Map<String, Double>> buckets) throws Exception
 	{
+		// 7 Column Tree
 		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6, 7);
 		DEPTree tree;
 		
+		
+		//Each sentence is a tree. Call analyze on the tree (sentence)
 		reader.open(in);
 		while ((tree = reader.next()) != null)
 		{
@@ -49,6 +52,9 @@ public class SentimentAnalyzer
 	
 	public void analyze(DEPTree tree, List<Map<String, Double>> buckets)
 	{
+		//Get the list of root nodes for the current tree(sentence)
+		//Call the recursive analyze method on the first root 
+		//Add score of each sentence to the list
 		List<DEPNode> roots = tree.getRoots();
 		SentimentScore score = analyze(roots.get(0), buckets);
 		scores.add(score);
@@ -56,12 +62,17 @@ public class SentimentAnalyzer
 	
 	private SentimentScore analyze(DEPNode head, List<Map<String, Double>> buckets)
 	{
+		//Get the score of the current Node passed 
 		SentimentScore headScore = getScore(head, buckets);
 		List<SentimentScore> childrenScores = new ArrayList<>();
 		
+		//For each dependent(child) analyze recursively
 		for (DEPNode child : head.getDependentList())
 			childrenScores.add(analyze(child, buckets));
+		
 
+		//Find the maxscore in the list of children, add it the the parentScore (headScore) then find the greater intensifier and multiply it by the headscore 
+		// proceed to build up   (our model correct currently it is parent + MaxScore(child) * MaxScore(MaxInt(children)
 		if (childrenScores.size() > 0) {
 			SentimentScore maxScore = Collections.max(childrenScores);
 			headScore.addScore(maxScore.getScore());
@@ -77,9 +88,12 @@ public class SentimentAnalyzer
 		return headScore;
 	}
 	
+	//For the current node we find the score by getting the sentiment score from the bucket, we return the sentimentScore of the word with an intensifier
 	protected SentimentScore getScore(DEPNode node, List<Map<String, Double>> buckets)
 	{
 		double score = 2;
+		int intensifier = 1;
+		if(node.getLabel().equals("neg")) intensifier = -1;
 		for (int i = 0; i < buckets.size(); i++) {
 			Map<String, Double> bucket = buckets.get(i);
 			if (bucket.containsKey(node.getWordForm())) {
@@ -87,7 +101,7 @@ public class SentimentAnalyzer
 				break;
 			}
 		}
-		return new SentimentScore(score, 1);
+		return new SentimentScore(score, intensifier);
 		
 	}
 	
