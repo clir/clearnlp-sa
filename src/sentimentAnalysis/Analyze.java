@@ -21,10 +21,10 @@ public class Analyze {
 		a.parser.parse();
 //		a.analyzer.read(new FileInputStream(StanfordDepTrees), a.parser.getWords().getWordBucket());
 		a.analyzer.read(new FileInputStream(oneSentenceDep), a.parser.getWords().getWordBucket());
-		List<SentimentScore> scores = a.analyzer.getScores();
+		List<ScoreNode> scores = a.analyzer.getSentences();
 		for (int i = 0; i < scores.size(); i++) {
-			SentimentScore score = scores.get(i);
-			System.out.println(score.getScore());
+			ScoreNode node = scores.get(i);
+			System.out.println(node);
 		}
 	}
 }
