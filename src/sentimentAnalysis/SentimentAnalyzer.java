@@ -30,10 +30,10 @@ import edu.emory.clir.clearnlp.reader.TSVReader;
  */
 public class SentimentAnalyzer
 {
-	private List<SentimentScore> scores;
+	private List<ScoreNode> sentences;
 	
 	public SentimentAnalyzer() {
-		scores = new ArrayList<>();
+		sentences = new ArrayList<>();
 	}
 	public void read(InputStream in, List<Map<String, Double>> buckets) throws Exception
 	{
@@ -55,43 +55,36 @@ public class SentimentAnalyzer
 		//Call the recursive analyze method on the first root 
 		//Add score of each sentence to the list
 		List<DEPNode> roots = tree.getRoots();
-		SentimentScore score = analyze(roots.get(0), buckets);
-		scores.add(score);
+		ScoreNode headNode = analyze(roots.get(0), buckets);
+		sentences.add(headNode);
 	}
 	
-	private SentimentScore analyze(DEPNode head, List<Map<String, Double>> buckets)
+	private ScoreNode analyze(DEPNode head, List<Map<String, Double>> buckets)
 	{
-		//Get the score of the current Node passed 
-		SentimentScore headScore = getScore(head, buckets);
-		List<SentimentScore> childrenScores = new ArrayList<>();
+		//Get the ScoreNode of the current DEPNode passed 
+		ScoreNode headNode = getNode(head, buckets);
+		List<ScoreNode> childrenNodes = new ArrayList<>();
 		
 		//For each dependent(child) analyze recursively
 		for (DEPNode child : head.getDependentList())
-			childrenScores.add(analyze(child, buckets));
-
+			childrenNodes.add(analyze(child, buckets));
+		for (ScoreNode child : childrenNodes)
+			child.setParent(headNode);
+		headNode.setDependents(childrenNodes);
 		// Find the absolute max score in the children, add it the parentScore (headScore) then find the greatest intensifier of the children and multiply it by the headscore 
 		// proceed to build up  - Johnny
-		SentimentScore maxScore = new SentimentScore(0,0);
-		SentimentScore maxIntensity = new SentimentScore(0,0);
-		for( int i = 0; i < childrenScores.size(); i++ ) {
-			SentimentScore childScore = childrenScores.get(i);
-			if (Math.abs(childScore.getScore()-.5) > Math.abs(maxScore.getScore()-.5)) 
-				maxScore =  childScore;
-			if (Math.abs(childScore.getIntensity()-.5) > Math.abs(maxIntensity.getIntensity()-.5))
-				maxIntensity = childScore;
-		}
 		//  head = (head + MaxScore(child))* MaxIntensity(children)
-		headScore.setScore((headScore.getScore() + maxScore.getScore())*maxIntensity.getIntensity());
+		headNode.setScore(headNode.getScore() + headNode.getMaxScore()*headNode.getMaxIntensity());
 		
-		return headScore;
+		return headNode;
 	}
 	
-	//For the current node we find the score by getting the sentiment score from the bucket, we return the sentimentScore of the word with an intensifier
-	protected SentimentScore getScore(DEPNode node, List<Map<String, Double>> buckets)
+	//For the current node we find the score by getting the sentiment score from the bucket, we return the ScoreNode of the word with an intensifier
+	protected ScoreNode getNode(DEPNode node, List<Map<String, Double>> buckets)
 	{
 		double score = 0;
-		int intensifier = 1;
-		if(node.getLabel().equals("neg")) intensifier = -1;
+		int intensity = 1;
+		if(node.getLabel().equals("neg")) intensity = -1;
 		for (int i = 0; i < buckets.size(); i++) {
 			Map<String, Double> bucket = buckets.get(i);
 			if (bucket.containsKey(node.getWordForm())) {
@@ -99,10 +92,10 @@ public class SentimentAnalyzer
 				break;
 			}
 		}
-		return new SentimentScore(score, intensifier);
+		return new ScoreNode(node.getWordForm(), score, intensity, null, null);
 	}
 	
-	protected List<SentimentScore> getScores() {
-		return scores;
+	protected List<ScoreNode> getSentences() {
+		return sentences;
 	}
 }
