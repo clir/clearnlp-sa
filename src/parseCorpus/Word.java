@@ -13,6 +13,7 @@ public class Word implements Serializable {
 	private List<Map<String,Double>> wordBuckets;
 	private Map<Integer,Double> rawScores;
 	private Map<String,Double> sentimentExpression;
+	private List<Double> stanfordScores;
 	public Word() {
 		sentimentListMap = new HashMap<>();
 		wordBuckets = new ArrayList<>();
@@ -20,6 +21,10 @@ public class Word implements Serializable {
 		wordBuckets.add(new HashMap<String, Double>());
 		rawScores = new HashMap<>();
 		sentimentExpression = new HashMap<>();
+		stanfordScores = new ArrayList<>();
+	}
+	public void addStanfordScore(double score){
+		stanfordScores.add(score);
 	}
 	public void addRawScore(int index, double average){
 		rawScores.put(index, average);

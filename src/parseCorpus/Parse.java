@@ -27,11 +27,26 @@ public class Parse {
 		parseStanfordTrees(words, new FileInputStream(trainFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
 		parseStanfordTrees(words, new FileInputStream(devFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
 		parseSubjectivity(words);
+		parseStanfordScores(new FileInputStream(trainFile));
 		parseRawScores(new FileInputStream(rawscores));
 		parseSentimentExpressions(new FileInputStream(sentexp));
+		
 		words.putInBuckets();
 		
 //		List<Map<String,Double>> wordBuckets = words.getWordBucket();
+	}
+	private void parseStanfordScores(FileInputStream in) throws IOException{
+		Scanner read = new Scanner(in);
+		String s;
+		int number;
+		double normalized;
+		while(read.hasNext()){
+			s = read.nextLine();
+			number = Integer.parseInt(s.substring(1, 2));
+			normalized = number/4;
+			words.addStanfordScore(normalized);
+		}
+		
 	}
 	private void parseSentimentExpressions(FileInputStream in) throws IOException {
 		Scanner read = new Scanner(in);
