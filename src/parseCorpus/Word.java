@@ -97,5 +97,53 @@ public class Word implements Serializable {
 			
 		}
 	}
+
+	public List<Map<String, Double>> getWordBuckets() {
+		return wordBuckets;
+	}
+
+	public void setWordBuckets(List<Map<String, Double>> wordBuckets) {
+		this.wordBuckets = wordBuckets;
+	}
+
+	public Map<Integer, Double> getRawScores() {
+		return rawScores;
+	}
+
+	public void setRawScores(Map<Integer, Double> rawScores) {
+		this.rawScores = rawScores;
+	}
+
+	public Map<String, Double> getSentimentExpression() {
+		return sentimentExpression;
+	}
+
+	public void setSentimentExpression(Map<String, Double> sentimentExpression) {
+		this.sentimentExpression = sentimentExpression;
+	}
+
+	public List<Double> getStanfordScores() {
+		return stanfordScores;
+	}
+
+	public void setStanfordScores(List<Double> stanfordScores) {
+		this.stanfordScores = stanfordScores;
+	}
+
+	public Map<String, Double> getIntensifierwords() {
+		return intensifierwords;
+	}
+
+	public void setIntensifierwords(Map<String, Double> intensifierwords) {
+		this.intensifierwords = intensifierwords;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	public void setSentimentListMap(Map<String, List<Integer>> sentimentListMap) {
+		this.sentimentListMap = sentimentListMap;
+	}
 }
 

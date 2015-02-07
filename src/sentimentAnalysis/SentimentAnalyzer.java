@@ -83,8 +83,10 @@ public class SentimentAnalyzer
 	protected ScoreNode getNode(DEPNode node, List<Map<String, Double>> buckets)
 	{
 		double score = 0;
-		int intensity = 1;
-		if(node.getLabel().equals("neg")) intensity = -1;
+		double intensity = .5;
+		if (intensity > .5)
+			if(node.getLabel().equals("neg"))
+				intensity = (intensity-1)*-1;
 		for (int i = 0; i < buckets.size(); i++) {
 			Map<String, Double> bucket = buckets.get(i);
 			if (bucket.containsKey(node.getWordForm())) {

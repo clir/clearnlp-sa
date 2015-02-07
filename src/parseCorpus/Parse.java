@@ -31,14 +31,15 @@ public class Parse {
 		String rawscores = "src/Stanford Sentiment/stanfordSentimentTreebankRaw/rawscores_exp12.txt";
 		String sentexp = "src/Stanford Sentiment/stanfordSentimentTreebankRaw/sentlex_exp12.txt";
 		String intensifierwords = "";
-		//trimWords(new FileInputStream(trainFile));
+//		trimWords(new FileInputStream(trainFile));
 		parseStanfordTrees(words, new FileInputStream(trainFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
-		parseStanfordTrees(words, new FileInputStream(devFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
+//		parseStanfordTrees(words, new FileInputStream(devFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
 		parseSubjectivity(words);
 		parseStanfordScores(new FileInputStream(trainFile));
+		//parseStanfordScores(new FileInputStream(devFile));
 		parseRawScores(new FileInputStream(rawscores));
 		parseSentimentExpressions(new FileInputStream(sentexp));
-		parseIntensifiers(new FileInputStream(intensifierwords));
+		//parseIntensifiers(new FileInputStream(intensifierwords));
 		words.putInBuckets();
 		
 	}
@@ -61,7 +62,9 @@ public class Parse {
 		double normalized;
 		while(read.hasNext()){
 			s = read.nextLine();
+			//System.out.println(s);
 			number = Integer.parseInt(s.substring(1, 2));
+			//System.out.println(number);
 			normalized = number/4;
 			words.addStanfordScore(normalized);
 		}
@@ -133,6 +136,7 @@ public class Parse {
 				String StringPair = matches.group();
 				StringPair = StringPair.replaceAll("\\(", "").replaceAll("\\)","");
 				String[] split = StringPair.split(" ");
+				//System.out.println(split[1] + "" + split[0]);
 				word.add(split[1],Integer.parseInt(split[0]));
 			}
 		}
