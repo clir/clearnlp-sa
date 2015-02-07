@@ -17,6 +17,8 @@ import java.util.regex.Pattern;
 
 public class Parse {
 	
+	
+	
 	private Word words;
 	public Parse() {
 		words = new Word();
@@ -39,10 +41,13 @@ public class Parse {
 		//parseStanfordScores(new FileInputStream(devFile));
 		parseRawScores(new FileInputStream(rawscores));
 		parseSentimentExpressions(new FileInputStream(sentexp));
+		trimKey(new FileInputStream("src/Stanford Sentiment/stanfordSentimentTreebank/datasetSplit.txt"));
+		writeSet(new File("src/Stanford Sentiment/stanfordSentimentTreebank/datasetSentences.txt"));
 		//parseIntensifiers(new FileInputStream(intensifierwords));
 		words.putInBuckets();
 		
 	}
+	
 	
 	
 	private void parseIntensifiers(FileInputStream in) throws IOException{
@@ -54,6 +59,10 @@ public class Parse {
 		
 	}
 	}
+	
+	
+	
+	
 	
 	private void parseStanfordScores(FileInputStream in) throws IOException{
 		Scanner read = new Scanner(in);
@@ -115,7 +124,7 @@ public class Parse {
 		    		score = 0;
 		    	if (polarity.substring(14).equals("negative"))
 			    	score = 4;
-		    	words.add(word.substring(6), score);
+		    	words.addToSentimentList(word.substring(6), score);
 		    	lineScanner.close();
 		    }
 		    else {
@@ -137,11 +146,11 @@ public class Parse {
 				StringPair = StringPair.replaceAll("\\(", "").replaceAll("\\)","");
 				String[] split = StringPair.split(" ");
 				//System.out.println(split[1] + "" + split[0]);
-				word.add(split[1],Integer.parseInt(split[0]));
+				word.addToSentimentList(split[1],Integer.parseInt(split[0]));
 			}
 		}
 	}
-	private static void trimWords(InputStream file) throws IOException {
+	private void trimWords(InputStream file) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(file));
 		String line;
 		File sentText = new File("Sentences.txt");
@@ -162,6 +171,45 @@ public class Parse {
 			w.write(line);
 		}
 		w.close();
-		
+	}
+	private void trimKey(FileInputStream in){
+		Scanner read = new Scanner(in);
+		int key, set;
+		while(read.hasNext()){
+			key = read.nextInt();
+			set = read.nextInt();
+			words.addSentenceKey(key, set);
+		}
+		}
+	
+	private void writeSet(File fileInputStream) throws IOException {
+	Scanner read = new Scanner(fileInputStream);
+	Writer devWriter = new BufferedWriter( new OutputStreamWriter(new FileOutputStream( new File("devFile.txt"))));
+	Writer testWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File("testFile.txt"))));
+	Writer trainWriter = new BufferedWriter( new OutputStreamWriter(new FileOutputStream(new File("trainFile.txt"))));
+	int sentenceNum,sentenceSetNum;
+	String sentence;
+	while(read.hasNextLine()){
+		Scanner lineScanner = new Scanner(read.nextLine());
+		sentenceNum = lineScanner.nextInt();
+		lineScanner.useDelimiter("\\t");
+		sentenceSetNum = words.getSentenceSet(sentenceNum);
+		sentence = lineScanner.next();
+		if(sentenceSetNum == 1){
+			trainWriter.write(sentence+"\n");
+		}
+		if(sentenceSetNum == 2){
+			testWriter.write(sentence+"\n");
+		}
+		if(sentenceSetNum == 3){
+			devWriter.write(sentence+"\n");
+		}
+		lineScanner.close();
+	}
+	devWriter.close();
+	testWriter.close();
+	devWriter.close();
+	
+	
 	}
 }

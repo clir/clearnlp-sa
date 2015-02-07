@@ -15,6 +15,7 @@ public class Word implements Serializable {
 	private Map<String,Double> sentimentExpression;
 	private List<Double> stanfordScores;
 	private Map<String,Double> intensifierwords;
+	private Map<Integer,Integer> sentenceKeys;
 	
 	public Word() {
 		sentimentListMap = new HashMap<>();
@@ -25,6 +26,7 @@ public class Word implements Serializable {
 		sentimentExpression = new HashMap<>();
 		stanfordScores = new ArrayList<>();
 		intensifierwords = new HashMap<>();
+		sentenceKeys = new HashMap<>();
 	}
 	
 	public void addIntensifierWords(String word, double intensity){
@@ -42,7 +44,7 @@ public class Word implements Serializable {
 		sentimentExpression.put(expression,average);
 	}
 	
-	public void add(String word, int sentiment) {
+	public void addToSentimentList(String word, int sentiment) {
 		sentiment /= 4;
 		if(!sentimentListMap.containsKey(word))
 		{
@@ -98,52 +100,17 @@ public class Word implements Serializable {
 		}
 	}
 
-	public List<Map<String, Double>> getWordBuckets() {
-		return wordBuckets;
-	}
-
-	public void setWordBuckets(List<Map<String, Double>> wordBuckets) {
-		this.wordBuckets = wordBuckets;
-	}
-
-	public Map<Integer, Double> getRawScores() {
-		return rawScores;
-	}
-
-	public void setRawScores(Map<Integer, Double> rawScores) {
-		this.rawScores = rawScores;
-	}
-
-	public Map<String, Double> getSentimentExpression() {
-		return sentimentExpression;
-	}
-
-	public void setSentimentExpression(Map<String, Double> sentimentExpression) {
-		this.sentimentExpression = sentimentExpression;
-	}
-
 	public List<Double> getStanfordScores() {
+		// TODO Auto-generated method stub
 		return stanfordScores;
 	}
-
-	public void setStanfordScores(List<Double> stanfordScores) {
-		this.stanfordScores = stanfordScores;
+	
+	public void addSentenceKey(int key, int set){
+		sentenceKeys.put(key, set);
+	}
+	public int getSentenceSet(int key){
+		return sentenceKeys.get(key);
 	}
 
-	public Map<String, Double> getIntensifierwords() {
-		return intensifierwords;
-	}
-
-	public void setIntensifierwords(Map<String, Double> intensifierwords) {
-		this.intensifierwords = intensifierwords;
-	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-
-	public void setSentimentListMap(Map<String, List<Integer>> sentimentListMap) {
-		this.sentimentListMap = sentimentListMap;
-	}
 }
 
