@@ -1,8 +1,8 @@
 # clearnlp-sa
 Sentiment Analysis
 
-User Stories:
 
-Normalize scores between 0 and 1 - Johnny 
-Parsed All sentiment Expressoins - Johnny 
-
+Feb 6th 
+Normalize all scores to be between 0 and 1 -Johnny
+Parsed all sentiment tree bank raw expressions - Johnny
+Custom tree class - mike

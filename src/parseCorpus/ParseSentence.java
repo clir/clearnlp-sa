@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
+//This class parses the stanford dev,test,train sets into just sentences
 public class ParseSentence {
 	
 	public static void main(String[] args) throws IOException{

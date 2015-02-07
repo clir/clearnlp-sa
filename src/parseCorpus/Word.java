@@ -11,12 +11,23 @@ public class Word implements Serializable {
 	private static final long serialVersionUID = 844801659782414882L;
 	private Map<String,List<Integer>> sentimentListMap;
 	private List<Map<String,Double>> wordBuckets;
-	
+	private Map<Integer,Double> rawScores;
+	private Map<String,Double> sentimentExpression;
 	public Word() {
 		sentimentListMap = new HashMap<>();
 		wordBuckets = new ArrayList<>();
 		wordBuckets.add(new HashMap<String, Double>());
 		wordBuckets.add(new HashMap<String, Double>());
+		rawScores = new HashMap<>();
+		sentimentExpression = new HashMap<>();
+	}
+	public void addRawScore(int index, double average){
+		rawScores.put(index, average);
+	}
+	public void addExpression(int Index, String expression){
+		double average = rawScores.get(Index);
+		average = (average-1)/25;
+		sentimentExpression.put(expression,average);
 	}
 	
 	public void add(String word, int sentiment) {

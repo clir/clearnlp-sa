@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Scanner;
@@ -21,14 +22,42 @@ public class Parse {
 	public void parse() throws Exception {
 		String devFile = "src/Stanford Sentiment/trees/dev.txt";
 		String trainFile = "src/Stanford Sentiment/trees/train.txt";
-		
+		String rawscores = "src/Stanford Sentiment/stanfordSentimentTreebankRaw/rawscores_exp12.txt";
+		String sentexp = "src/Stanford Sentiment/stanfordSentimentTreebankRaw/sentlex_exp12.txt";
 		parseStanfordTrees(words, new FileInputStream(trainFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
 		parseStanfordTrees(words, new FileInputStream(devFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
 		parseSubjectivity(words);
+		parseRawScores(new FileInputStream(rawscores));
+		parseSentimentExpressions(new FileInputStream(sentexp));
 		words.putInBuckets();
 		
 //		List<Map<String,Double>> wordBuckets = words.getWordBucket();
 	}
+	private void parseSentimentExpressions(FileInputStream in) throws IOException {
+		Scanner read = new Scanner(in);
+		int currentIndex;
+		String currentString;
+
+		while(read.hasNext()){
+		currentIndex=read.nextInt();
+		currentString=read.nextLine();
+		words.addExpression(currentIndex, currentString);
+		//System.out.println(currentIndex+"" + "" +currentString);		
+		}
+		}
+		
+
+		private void parseRawScores(FileInputStream in) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+		String line;
+		String[] split;
+		while ((line = reader.readLine()) != null) {
+		split = line.split(" ");
+		double average = (Integer.parseInt(split[1])+Integer.parseInt(split[2])+Integer.parseInt(split[3]))/3;
+		//System.out.println(Integer.parseInt(split[0])+" " +average );
+		words.addRawScore(Integer.parseInt(split[0]), average);
+		}
+		}
 	
 	public Word getWords() {
 		return words;
