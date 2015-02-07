@@ -14,6 +14,8 @@ public class Word implements Serializable {
 	private Map<Integer,Double> rawScores;
 	private Map<String,Double> sentimentExpression;
 	private List<Double> stanfordScores;
+	private Map<String,Double> intensifierwords;
+	
 	public Word() {
 		sentimentListMap = new HashMap<>();
 		wordBuckets = new ArrayList<>();
@@ -22,6 +24,11 @@ public class Word implements Serializable {
 		rawScores = new HashMap<>();
 		sentimentExpression = new HashMap<>();
 		stanfordScores = new ArrayList<>();
+		intensifierwords = new HashMap<>();
+	}
+	
+	public void addIntensifierWords(String word, double intensity){
+		intensifierwords.put(word, intensity);
 	}
 	public void addStanfordScore(double score){
 		stanfordScores.add(score);

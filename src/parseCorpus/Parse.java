@@ -1,12 +1,16 @@
 package parseCorpus;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,24 +21,39 @@ public class Parse {
 	public Parse() {
 		words = new Word();
 	}
+	public Word getWords() {
+		return words;
+	}
 
-//	public static void main(String[] args) throws Exception {
 	public void parse() throws Exception {
 		String devFile = "src/Stanford Sentiment/trees/dev.txt";
 		String trainFile = "src/Stanford Sentiment/trees/train.txt";
 		String rawscores = "src/Stanford Sentiment/stanfordSentimentTreebankRaw/rawscores_exp12.txt";
 		String sentexp = "src/Stanford Sentiment/stanfordSentimentTreebankRaw/sentlex_exp12.txt";
+		String intensifierwords = "";
+		//trimWords(new FileInputStream(trainFile));
 		parseStanfordTrees(words, new FileInputStream(trainFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
 		parseStanfordTrees(words, new FileInputStream(devFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
 		parseSubjectivity(words);
 		parseStanfordScores(new FileInputStream(trainFile));
 		parseRawScores(new FileInputStream(rawscores));
 		parseSentimentExpressions(new FileInputStream(sentexp));
-		
+		parseIntensifiers(new FileInputStream(intensifierwords));
 		words.putInBuckets();
 		
-//		List<Map<String,Double>> wordBuckets = words.getWordBucket();
 	}
+	
+	
+	private void parseIntensifiers(FileInputStream in) throws IOException{
+	Scanner read = new Scanner(in);
+	String s;
+	double intensity;
+	
+	while(read.hasNext()){
+		
+	}
+	}
+	
 	private void parseStanfordScores(FileInputStream in) throws IOException{
 		Scanner read = new Scanner(in);
 		String s;
@@ -74,10 +93,8 @@ public class Parse {
 		}
 		}
 	
-	public Word getWords() {
-		return words;
-	}
-	public static void parseSubjectivity(Word words) throws Exception {
+	
+	private void parseSubjectivity(Word words) throws Exception {
 		File file = new File("subjectivity.txt");
 		Scanner scanner =  new Scanner(file);
 		while (scanner.hasNextLine()){
@@ -105,7 +122,7 @@ public class Parse {
 		scanner.close();
 		
 	}
-	public static void parseStanfordTrees(Word word, InputStream in, String pattern) throws Exception {
+	private void parseStanfordTrees(Word word, InputStream in, String pattern) throws Exception {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		String line;
 		Pattern regexpattern = Pattern.compile(pattern);
@@ -119,5 +136,28 @@ public class Parse {
 				word.add(split[1],Integer.parseInt(split[0]));
 			}
 		}
+	}
+	private static void trimWords(InputStream file) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(file));
+		String line;
+		File sentText = new File("Sentences.txt");
+        FileOutputStream Output = new FileOutputStream(sentText);
+        OutputStreamWriter osw = new OutputStreamWriter(Output);
+        Writer w = new BufferedWriter(osw);
+		while ((line = reader.readLine()) != null) {
+			line = line.replaceAll("[(][0-9]", "").replaceAll("\\)","");
+			line.trim();
+			line = line.replaceAll("\\s+", " ");
+			line = line.replaceAll("[\\s]['][s]", "'s");
+			line = line.replaceAll("[\\s]['][m]", "'m");
+			line = line.replaceAll("[\\s]['][t]", "'t");
+			line = line.replaceAll("[\\s]['][l]", "'l");
+			line = line.replaceAll("[\\s]['][r]", "'r");
+			line = line.replaceAll("[\\s][,]", ",");
+			line = line.replaceAll("[\\s][.]", ".");
+			w.write(line);
+		}
+		w.close();
+		
 	}
 }
