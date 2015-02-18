@@ -15,12 +15,12 @@ public class Analyze {
 	}
 	public static void main(String[] args) throws Exception {
 		
-//		String oneSentenceDep = "oneSentenceDepTest.txt";
+		//String oneSentenceDep = "oneSentenceDepTest.txt";
 		String StanfordDepTrees = "trainDepTree.txt";
 		Analyze a = new Analyze(); 
-//		a.parser.parse();
+		a.parser.parse();
 		a.analyzer.read(new FileInputStream(StanfordDepTrees), a.parser.getWords().getWordBucket());
-//		a.analyzer.read(new FileInputStream(oneSentenceDep), a.parser.getWords().getWordBucket());
+		//a.analyzer.read(new FileInputStream(oneSentenceDep), a.parser.getWords().getWordBucket());
 		
 		List<ScoreNode> scores = a.analyzer.getSentences();
 		List<Double> stanfordScores = a.parser.getWords().getStanfordScores();
@@ -32,7 +32,7 @@ public class Analyze {
 				System.out.println(dependent.getWordForm() + " ");
 			}
 			System.out.println();
-//			System.out.println(stanfordScores.get(i));
+			//System.out.println(stanfordScores.get(i));
 		}
 	}
 }

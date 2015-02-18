@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 
 public class Word implements Serializable {
 	private static final long serialVersionUID = 844801659782414882L;
-	private Map<String,List<Integer>> sentimentListMap;
+	private Map<String,List<Double>> sentimentListMap;
 	private List<Map<String,Double>> wordBuckets;
 	private Map<Integer,Double> rawScores;
 	private Map<String,Double> sentimentExpression;
@@ -40,21 +40,22 @@ public class Word implements Serializable {
 	}
 	public void addExpression(int Index, String expression){
 		double average = rawScores.get(Index);
+		//
 		average = (average-1)/25;
 		sentimentExpression.put(expression,average);
 	}
-	
+	//1/2x-1 --> normalize to -1 and 1
 	public void addToSentimentList(String word, int sentiment) {
-		sentiment /= 4;
+		double s = (.5*sentiment)-1;
 		if(!sentimentListMap.containsKey(word))
 		{
-			List<Integer> tmp = new ArrayList<>();
-			tmp.add(sentiment);
+			List<Double> tmp = new ArrayList<>();
+			tmp.add(s);
 			sentimentListMap.put(word, tmp);
 		}
 		else {
-			List<Integer> answer = sentimentListMap.get(word);
-			answer.add(sentiment);
+			List<Double> answer = sentimentListMap.get(word);
+			answer.add(s);
 			sentimentListMap.put(word, answer);
 		}
 	}
@@ -66,11 +67,11 @@ public class Word implements Serializable {
 		return false;
 	}
 	
-	public double getAverageSentiment(List<Integer> sentiments) {
+	public double getAverageSentiment(List<Double> sentiments) {
 		return sentiments.stream().mapToDouble(p->p).average().getAsDouble();
 	}
 	
-	public Map<String, List<Integer>> getSentimentListMap() {
+	public Map<String, List<Double>> getSentimentListMap() {
 		return sentimentListMap;
 	}
 	
@@ -80,10 +81,10 @@ public class Word implements Serializable {
 	
 	//For every list of sentiments we find the stdDev and put it in bucket
 	public void putInBuckets() {
-		for (Entry<String, List<Integer>> entry : sentimentListMap.entrySet()) {
+		for (Entry<String, List<Double>> entry : sentimentListMap.entrySet()) {
 			double average = getAverageSentiment(entry.getValue());
 			List<Double> temp = new ArrayList<>();
-			for (int sentiment : entry.getValue()) {
+			for (double sentiment : entry.getValue()) {
 				temp.add(Math.pow(sentiment-average,2));
 			}
 			
