@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 public class Word implements Serializable {
 	private static final long serialVersionUID = 844801659782414882L;
 	private Map<String,List<Double>> sentimentListMap;
-	private List<Map<String,Double>> wordBuckets;
+	private Map<String,Double> wordBucket;
 	private Map<Integer,Double> rawScores;
 	private Map<String,Double> sentimentExpression;
 	private List<Double> stanfordScores;
@@ -19,9 +19,7 @@ public class Word implements Serializable {
 	
 	public Word() {
 		sentimentListMap = new HashMap<>();
-		wordBuckets = new ArrayList<>();
-		wordBuckets.add(new HashMap<String, Double>());
-		wordBuckets.add(new HashMap<String, Double>());
+		wordBucket = new HashMap<>();
 		rawScores = new HashMap<>();
 		sentimentExpression = new HashMap<>();
 		stanfordScores = new ArrayList<>();
@@ -67,36 +65,26 @@ public class Word implements Serializable {
 	}
 	
 	public double getAverageSentiment(List<Double> sentiments) {
-		return sentiments.stream().mapToDouble(p->p).average().getAsDouble();
+		double average = 0d;
+		for (double sentiment : sentiments) {
+			average += sentiment;
+		}
+		return average/sentiments.size();
 	}
 	
 	public Map<String, List<Double>> getSentimentListMap() {
 		return sentimentListMap;
 	}
 	
-	public List<Map<String,Double>> getWordBucket() {
-		return wordBuckets;
+	public Map<String,Double> getWordBucket() {
+		return wordBucket;
 	}
 	
-	//For every list of sentiments we find the stdDev and put it in bucket
+	//For every list of sentiments for each word we put the average sentiment in wordBucket
 	public void putInBuckets() {
 		for (Entry<String, List<Double>> entry : sentimentListMap.entrySet()) {
 			double average = getAverageSentiment(entry.getValue());
-			List<Double> temp = new ArrayList<>();
-			for (double sentiment : entry.getValue()) {
-				temp.add(Math.pow(sentiment-average,2));
-			}
-			
-			double stdDev = Math.sqrt(temp.stream().mapToDouble(p->p).average().getAsDouble());
-			if (average >= 0 && average <= .25) {
-				Map<String, Double> bucket = wordBuckets.get(0);
-				bucket.put(entry.getKey(), stdDev);
-			}
-			else if (average >= .75 && average <= 1) {
-				Map<String, Double> bucket = wordBuckets.get(1);
-				bucket.put(entry.getKey(), stdDev);
-			}
-			
+			wordBucket.put(entry.getKey(), average);
 		}
 	}
 
@@ -110,6 +98,5 @@ public class Word implements Serializable {
 	public int getSentenceSet(int key){
 		return sentenceKeys.get(key);
 	}
-
 }
 

@@ -35,7 +35,7 @@ public class SentimentAnalyzer
 	public SentimentAnalyzer() {
 		sentences = new ArrayList<>();
 	}
-	public void readDepTree(InputStream in, List<Map<String, Double>> buckets) throws Exception
+	public void readDepTree(InputStream in, Map<String, Double> map) throws Exception
 	{
 		// 7 Column Tree
 		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6, 7);
@@ -43,32 +43,31 @@ public class SentimentAnalyzer
 		
 		//Each sentence is a tree. Call analyze on the tree (sentence)
 		reader.open(in);
-		int count =0;
 		while ((tree = reader.next()) != null)
 		{
-			analyze(tree, buckets);
+			analyze(tree, map);
 		}
 	}
 	
-	public void analyze(DEPTree tree, List<Map<String, Double>> buckets)
+	public void analyze(DEPTree tree, Map<String, Double> map)
 	{
 		//Get the list of root nodes for the current tree(sentence)
 		//Call the recursive analyze method on the first root 
 		//Add score of each sentence to the list
 		List<DEPNode> roots = tree.getRoots();
-		ScoreNode headNode = analyzeHead(roots.get(0), buckets);
+		ScoreNode headNode = analyzeHead(roots.get(0), map);
 		sentences.add(headNode);
 	}
 	
-	private ScoreNode analyzeHead(DEPNode head, List<Map<String, Double>> buckets)
+	private ScoreNode analyzeHead(DEPNode head, Map<String, Double> map)
 	{
 		//Get the ScoreNode of the current DEPNode passed 
-		ScoreNode headNode = getNode(head, buckets);
+		ScoreNode headNode = getNode(head, map);
 		List<ScoreNode> childrenNodes = new ArrayList<>();
 		
 		//For each dependent(child) analyze recursively
 		for (DEPNode child : head.getDependentList())
-			childrenNodes.add(analyzeHead(child, buckets));
+			childrenNodes.add(analyzeHead(child, map));
 		for (ScoreNode child : childrenNodes)
 			child.setParent(headNode);
 		headNode.setDependents(childrenNodes);
@@ -81,21 +80,17 @@ public class SentimentAnalyzer
 	}
 	
 	//For the current node we find the score by getting the sentiment score from the bucket, we return the ScoreNode of the word with an intensifier
-	protected ScoreNode getNode(DEPNode node, List<Map<String, Double>> buckets)
+	protected ScoreNode getNode(DEPNode node, Map<String, Double> map)
 	{
 		double score = 0;
-		double intensity = .5;
-		if (intensity > .5)
-			if(node.getLabel().equals("neg"))
-				intensity = (intensity-1)*-1;
-		for (int i = 0; i < buckets.size(); i++) {
-			Map<String, Double> bucket = buckets.get(i);
-			if (bucket.containsKey(node.getWordForm())) {
-				score = bucket.get(node.getWordForm())-2;
-				break;
-			}
+		double intensity = 1;
+		if(node.getLabel().equals("neg")) {
+			intensity = intensity*-1;
 		}
-		return new ScoreNode(node.getWordForm(), score, intensity, null, null);
+		if (map.containsKey(node.getWordForm())) {
+			score = map.get(node.getWordForm());
+		}
+		return new ScoreNode(node.getWordForm(), score, intensity);
 	}
 	
 	protected List<ScoreNode> getSentences() {

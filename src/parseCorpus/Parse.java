@@ -63,7 +63,8 @@ public class Parse {
 		while(read.hasNext() && count < 8504){
 			String s = read.nextLine();
 			int number = Integer.parseInt(s.substring(1, 2));
-			double normalized = number/4;
+//			System.out.println(number);
+			double normalized = (number/2d)-1;
 			words.addStanfordScore(normalized);
 			count++;
 		}
@@ -78,7 +79,6 @@ public class Parse {
 			currentIndex=read.nextInt();
 			currentString=read.nextLine();
 			words.addExpression(currentIndex, currentString);
-			//System.out.println(currentIndex+"" + "" +currentString);		
 		}
 		read.close();
 	}

@@ -11,7 +11,7 @@ public class ScoreNode {
 	private List<ScoreNode> dependents;
 	private ScoreNode parent;
 	
-	public ScoreNode(String wordForm, double score, double intensity, ScoreNode parent, List<ScoreNode> dependents) {
+	public ScoreNode(String wordForm, double score, double intensity) {
 		this.wordForm = wordForm;
 		this.score = score;
 		this.intensity = intensity;
@@ -28,7 +28,7 @@ public class ScoreNode {
 	}
 	
 	public double getMaxIntensity() {
-		double maxIntensity = 0;
+		double maxIntensity =1;
 		for(int i = 0; i < dependents.size(); i++) {
 			Double childIntensity = dependents.get(i).getScore();
 			if (Math.abs(childIntensity) > Math.abs(maxIntensity)) 
