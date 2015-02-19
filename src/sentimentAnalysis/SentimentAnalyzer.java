@@ -35,7 +35,7 @@ public class SentimentAnalyzer
 	public SentimentAnalyzer() {
 		sentences = new ArrayList<>();
 	}
-	public void read(InputStream in, List<Map<String, Double>> buckets) throws Exception
+	public void readDepTree(InputStream in, List<Map<String, Double>> buckets) throws Exception
 	{
 		// 7 Column Tree
 		TSVReader reader = new TSVReader(0, 1, 2, 3, 4, 5, 6, 7);
@@ -43,6 +43,7 @@ public class SentimentAnalyzer
 		
 		//Each sentence is a tree. Call analyze on the tree (sentence)
 		reader.open(in);
+		int count =0;
 		while ((tree = reader.next()) != null)
 		{
 			analyze(tree, buckets);
@@ -55,11 +56,11 @@ public class SentimentAnalyzer
 		//Call the recursive analyze method on the first root 
 		//Add score of each sentence to the list
 		List<DEPNode> roots = tree.getRoots();
-		ScoreNode headNode = analyze(roots.get(0), buckets);
+		ScoreNode headNode = analyzeHead(roots.get(0), buckets);
 		sentences.add(headNode);
 	}
 	
-	private ScoreNode analyze(DEPNode head, List<Map<String, Double>> buckets)
+	private ScoreNode analyzeHead(DEPNode head, List<Map<String, Double>> buckets)
 	{
 		//Get the ScoreNode of the current DEPNode passed 
 		ScoreNode headNode = getNode(head, buckets);
@@ -67,7 +68,7 @@ public class SentimentAnalyzer
 		
 		//For each dependent(child) analyze recursively
 		for (DEPNode child : head.getDependentList())
-			childrenNodes.add(analyze(child, buckets));
+			childrenNodes.add(analyzeHead(child, buckets));
 		for (ScoreNode child : childrenNodes)
 			child.setParent(headNode);
 		headNode.setDependents(childrenNodes);

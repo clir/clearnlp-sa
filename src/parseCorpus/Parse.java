@@ -23,22 +23,19 @@ public class Parse {
 	public Parse() {
 		words = new Word();
 	}
-	public Word getWords() {
-		return words;
-	}
 
 	public void parse() throws Exception {
-		String devFile = "src/Stanford Sentiment/trees/dev.txt";
+//		String devFile = "src/Stanford Sentiment/trees/dev.txt";
 		String trainFile = "src/Stanford Sentiment/trees/train.txt";
 		String rawscores = "src/Stanford Sentiment/stanfordSentimentTreebankRaw/rawscores_exp12.txt";
 		String sentexp = "src/Stanford Sentiment/stanfordSentimentTreebankRaw/sentlex_exp12.txt";
-		String intensifierwords = "";
+//		String intensifierwords = "";
 		//trimWords(new FileInputStream(trainFile));
 		parseStanfordTrees(words, new FileInputStream(trainFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
-		parseStanfordTrees(words, new FileInputStream(devFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
+//		parseStanfordTrees(words, new FileInputStream(devFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
 		parseSubjectivity(words);
 		parseStanfordScores(new FileInputStream(trainFile));
-		parseStanfordScores(new FileInputStream(devFile));
+//		parseStanfordScores(new FileInputStream(devFile));
 		parseRawScores(new FileInputStream(rawscores));
 		parseSentimentExpressions(new FileInputStream(sentexp));
 		//trimKey(new FileInputStream("src/Stanford Sentiment/stanfordSentimentTreebank/datasetSplit.txt"));
@@ -60,24 +57,17 @@ public class Parse {
 	}
 	}
 	
-	
-	
-	
-	
 	private void parseStanfordScores(FileInputStream in) throws IOException{
 		Scanner read = new Scanner(in);
-		String s;
-		int number;
-		double normalized;
-		while(read.hasNext()){
-			s = read.nextLine();
-			//System.out.println(s);
-			number = Integer.parseInt(s.substring(1, 2));
-			//System.out.println(number);
-			normalized = number/4;
+		int count = 0;
+		while(read.hasNext() && count < 8504){
+			String s = read.nextLine();
+			int number = Integer.parseInt(s.substring(1, 2));
+			double normalized = number/4;
 			words.addStanfordScore(normalized);
+			count++;
 		}
-		
+		read.close();
 	}
 	private void parseSentimentExpressions(FileInputStream in) throws IOException {
 		Scanner read = new Scanner(in);
@@ -85,25 +75,25 @@ public class Parse {
 		String currentString;
 
 		while(read.hasNext()){
-		currentIndex=read.nextInt();
-		currentString=read.nextLine();
-		words.addExpression(currentIndex, currentString);
-		//System.out.println(currentIndex+"" + "" +currentString);		
+			currentIndex=read.nextInt();
+			currentString=read.nextLine();
+			words.addExpression(currentIndex, currentString);
+			//System.out.println(currentIndex+"" + "" +currentString);		
 		}
-		}
+		read.close();
+	}
 		
 
-		private void parseRawScores(FileInputStream in) throws IOException {
+	private void parseRawScores(FileInputStream in) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		String line;
 		String[] split;
 		while ((line = reader.readLine()) != null) {
 		split = line.split(" ");
 		double average = (Integer.parseInt(split[1])+Integer.parseInt(split[2])+Integer.parseInt(split[3]))/3;
-		//System.out.println(Integer.parseInt(split[0])+" " +average );
 		words.addRawScore(Integer.parseInt(split[0]), average);
 		}
-		}
+	}
 	
 	
 	private void parseSubjectivity(Word words) throws Exception {
@@ -135,17 +125,22 @@ public class Parse {
 		
 	}
 	private void parseStanfordTrees(Word word, InputStream in, String pattern) throws Exception {
+//		new InputStreamReader(in).
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+//		System.out.println(reader.lines().count());
 		String line;
 		Pattern regexpattern = Pattern.compile(pattern);
 		Matcher matches;
+		int count = 0;
 		while ((line = reader.readLine()) != null) {
 			matches = regexpattern.matcher(line);
+//			System.out.println(count++);
+
 			while(matches.find()) {
 				String StringPair = matches.group();
 				StringPair = StringPair.replaceAll("\\(", "").replaceAll("\\)","");
 				String[] split = StringPair.split(" ");
-				//System.out.println(split[1] + "" + split[0]);
+//				System.out.println(split[1] + "" + split[0]);
 				word.addToSentimentList(split[1],Integer.parseInt(split[0]));
 			}
 		}
@@ -179,7 +174,8 @@ public class Parse {
 			key = read.nextInt();
 			set = read.nextInt();
 			words.addSentenceKey(key, set);
-		}
+			}
+		read.close();
 		}
 	
 	private void writeSet(File fileInputStream) throws IOException {
@@ -208,8 +204,10 @@ public class Parse {
 	}
 	devWriter.close();
 	testWriter.close();
-	devWriter.close();
+	devWriter.close();	
+	}
 	
-	
+	public Word getWords() {
+		return words;
 	}
 }

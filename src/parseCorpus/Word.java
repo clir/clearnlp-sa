@@ -40,7 +40,6 @@ public class Word implements Serializable {
 	}
 	public void addExpression(int Index, String expression){
 		double average = rawScores.get(Index);
-		//
 		average = (average-1)/25;
 		sentimentExpression.put(expression,average);
 	}
@@ -102,7 +101,6 @@ public class Word implements Serializable {
 	}
 
 	public List<Double> getStanfordScores() {
-		// TODO Auto-generated method stub
 		return stanfordScores;
 	}
 	
