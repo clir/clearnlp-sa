@@ -93,16 +93,17 @@ public class SentimentAnalyzer
 		if (map.containsKey(node.getLemma())) {
 			score = map.get(node.getLemma());
 		}
-		ScoreNode sNode = new ScoreNode(node.getWordForm(), score, intensity);
+		ScoreNode sNode = new ScoreNode(node.getLemma(), score, intensity);
 		depScoreMap.put(node, sNode);
 		return sNode;
 	}
 	
 	private double getIntensity(DEPNode node) {
 		double intensity = 1;
-		if(node.getLabel().equals("neg")) {
-			intensity = intensity*-1;
-		}
+//		if(node.getLabel().equals("neg")) {
+//			intensity = intensity*-1;
+//			System.out.println("neg");
+//		}
 		if (words.getIntensifierWords().get(node.getLemma()) != null) {
 			intensity = words.getIntensifierWords().get(node.getLemma());
 		}

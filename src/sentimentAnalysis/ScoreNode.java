@@ -5,14 +5,14 @@ import java.util.List;
 import edu.emory.clir.clearnlp.util.MathUtils;
 
 public class ScoreNode {
-	private String wordForm;
+	private String lemma;
 	private double score;
 	private double intensity;
 	private List<ScoreNode> dependents;
 	private ScoreNode parent;
 	
-	public ScoreNode(String wordForm, double score, double intensity) {
-		this.wordForm = wordForm;
+	public ScoreNode(String lemma, double score, double intensity) {
+		this.lemma = lemma;
 		this.score = score;
 		this.intensity = intensity;
 	}
@@ -28,21 +28,22 @@ public class ScoreNode {
 	}
 	
 	public double getMaxIntensity() {
-		double maxIntensity =1;
+		double maxIntensity = this.intensity;
 		for(int i = 0; i < dependents.size(); i++) {
-			Double childIntensity = dependents.get(i).getScore();
+			Double childIntensity = dependents.get(i).getIntensity();
 			if (Math.abs(childIntensity) > Math.abs(maxIntensity)) 
 				maxIntensity = childIntensity ;
 		}
+//		System.out.println(maxIntensity);
 		return maxIntensity;
 	}
 
-	public String getWordForm() {
-		return wordForm;
+	public String getLemma() {
+		return lemma;
 	}
 
-	public void setWordForm(String wordForm) {
-		this.wordForm = wordForm;
+	public void setWordForm(String lemma) {
+		this.lemma = lemma;
 	}
 
 	public double getScore() {
@@ -55,8 +56,8 @@ public class ScoreNode {
 
 	@Override
 	public String toString() {
-		return "ScoreNode [wordForm=" + wordForm + ", score=" + score
-				+ ", intensity=" + intensity + "]";
+		return "wordForm=" + lemma + ", score=" + score
+				+ ", intensity=" + intensity;
 	}
 
 	public double getIntensity() {
@@ -90,5 +91,4 @@ public class ScoreNode {
 	{
 		return MathUtils.signum(this.score - o.score);
 	}
-	
 }

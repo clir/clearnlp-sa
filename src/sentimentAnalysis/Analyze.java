@@ -32,24 +32,40 @@ public class Analyze {
 		List<ScoreNode> scores = a.analyzer.getSentences();
 		List<Double> stanfordScores = a.parser.getWords().getStanfordScores();
 		Deque<ScoreNode> q = new ArrayDeque<>(); 
+		double truePositive = 0;
+		double trueNegative= 0;
+		double falseNegative = 0;
+		double falsePositive = 0;
 		for (int i = 0; i < scores.size(); i++) {
-			System.out.println(i+1 + " " + s.nextLine());
-			System.out.println(" calculated score: " + scores.get(i).getScore());
-			
-			System.out.println("real score: " + stanfordScores.get(i));
-			System.out.print(scores.get(i).getWordForm() + " " + scores.get(i).getMaxIntensity() + " "+ scores.get(i).getScore() + "\n");
+//			System.out.println(i+1 + " " + s.nextLine());
+//			System.out.println(" calculated score: " + scores.get(i).getScore());
+//			System.out.println("real score: " + stanfordScores.get(i));
+//			System.out.print(scores.get(i).getWordLemma() + " " + scores.get(i).getMaxIntensity() + " "+ scores.get(i).getScore() + "\n");
+			if (stanfordScores.get(i) > 0 && scores.get(i).getScore() > 0)
+				truePositive++;
+			if (stanfordScores.get(i) > 0 && scores.get(i).getScore() <= 0)
+				falsePositive++;
+			if (stanfordScores.get(i) <= 0 && scores.get(i).getScore() <= 0)
+				trueNegative++;
+			if (stanfordScores.get(i) <= 0 && scores.get(i).getScore() > 0)
+				falseNegative++; 
 			List<ScoreNode> dependents = scores.get(i).getDependents();
 			q.addAll(dependents);
 			
 			while (!q.isEmpty()) {
 				ScoreNode dependent = q.poll();
 				
-				System.out.print(dependent.getWordForm() + " " + dependent.getMaxIntensity() + " "+ dependent.getScore() + "\n");
+//				System.out.print(dependent.getLemma() + " " + dependent.getMaxIntensity() + " "+ dependent.getScore() + "\n");
 				for (ScoreNode d : dependent.getDependents()) {
 					q.addFirst(d);
 				}
 			}
-			System.out.println();
+//			System.out.println();
 		}
+		double accuracy = (truePositive+trueNegative)/(truePositive+trueNegative+falsePositive+falseNegative);
+		double recall = truePositive/(truePositive+falseNegative);
+		double precision = truePositive/(truePositive+falsePositive);
+		double f1 = (2*precision*recall)/(precision+recall);
+		System.out.println("Accuracy: " + accuracy + " recall: " +  recall + " precision: " + precision + " f1 = "+  f1);
 	}
 }
