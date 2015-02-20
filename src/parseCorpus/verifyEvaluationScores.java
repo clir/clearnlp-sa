@@ -91,16 +91,17 @@ public class verifyEvaluationScores {
 		int lineIndex =0;
 		double treeSentiment;
 		while((line=read.readLine())!=null){
-			if(veri.dictionary.get(line)!=null){
+			System.out.println(line);
 			currIndex = veri.dictionary.get(line);	
-			}
-			else{				continue;
-			}
 			sentimentValue = veri.phraseSentimentValues.get(currIndex);
 			treeSentiment = veri.stanfordScores.get(lineIndex++);
-			System.out.println(treeSentiment/5 + " "  +sentimentValue);
+			try{
 			assertEquals(treeSentiment/5, sentimentValue  , .2);
-			
+			System.out.println("Expected: " +treeSentiment +" " +treeSentiment/5 +  " Actual: " +sentimentValue + " Within Delta " + .2);
+			}
+			catch(AssertionError e){
+			System.out.println("Expected: " +treeSentiment/5 +  " Actual: " +sentimentValue + " Within Delta " + .2);
+			}
 		}
 	}
 }
