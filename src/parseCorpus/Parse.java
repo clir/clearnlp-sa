@@ -42,7 +42,6 @@ public class Parse {
 		//writeSet(new File("src/Stanford Sentiment/stanfordSentimentTreebank/datasetSentences.txt"));
 		parseIntensifiers(new FileInputStream(intensifierwords));
 		words.putInBuckets();
-		
 	}
 	
 	
