@@ -42,8 +42,10 @@ public class Word implements Serializable {
 		sentimentExpression.put(expression,average);
 	}
 	//1/2x-1 --> normalize to -1 and 1
-	public void addToSentimentList(String word, int sentiment) {
-		double s = (.5*sentiment)-1;
+	public void addToSentimentList(String word, double score) {
+		double s = (.5*score)-1;
+//		if (word.equals("exhilarate"))
+//			System.out.println("exhilarate: " + score);
 		if(!sentimentListMap.containsKey(word))
 		{
 			List<Double> tmp = new ArrayList<>();

@@ -10,6 +10,7 @@ import java.util.Queue;
 import java.util.Scanner;
 
 import parseCorpus.Parse;
+import parseCorpus.Word;
 
 public class Analyze {
 	SentimentAnalyzer analyzer;
@@ -21,7 +22,8 @@ public class Analyze {
 	}
 	public static void main(String[] args) throws Exception {		
 		String trainDepTrees = "trainDepTree.txt";
-//		String devDepTrees = "devDepTree.txt";
+		String devDepTrees = "devDepTree.txt";
+		String oneSentenceDep = "oneSentenceDepTest.txt";
 		Analyze a = new Analyze(); 
 		a.parser.parse();
 		a.analyzer.readDepTree(new FileInputStream(trainDepTrees), a.parser.getWords().getWordBucket());
@@ -40,32 +42,53 @@ public class Analyze {
 //			System.out.println(i+1 + " " + s.nextLine());
 //			System.out.println(" calculated score: " + scores.get(i).getScore());
 //			System.out.println("real score: " + stanfordScores.get(i));
-//			System.out.print(scores.get(i).getWordLemma() + " " + scores.get(i).getMaxIntensity() + " "+ scores.get(i).getScore() + "\n");
-			if (stanfordScores.get(i) > 0 && scores.get(i).getScore() > 0)
+//			System.out.print(scores.get(i).getLemma() + " " + scores.get(i).getMaxIntensity() + " "+ scores.get(i).getScore() + "\n");
+			if (stanfordScores.get(i) > 0 && scores.get(i).getScore() > 0) {
 				truePositive++;
-			if (stanfordScores.get(i) > 0 && scores.get(i).getScore() <= 0)
+				s.nextLine();
+			}
+			if (stanfordScores.get(i) > 0 && scores.get(i).getScore() <= 0) {
 				falsePositive++;
-			if (stanfordScores.get(i) <= 0 && scores.get(i).getScore() <= 0)
+				System.out.println(i+1 + " " + s.nextLine());
+				System.out.println("calculated score: " + scores.get(i).getScore());
+//				System.out.println("maxScore: " + scores.get(i).getMaxScore());
+				System.out.println("real score: " + stanfordScores.get(i));
+				System.out.print("head: " + scores.get(i).getLemma() + " " + scores.get(i).getMaxIntensity() + " "+ scores.get(i).getScore() + "\n");
+			}
+			if (stanfordScores.get(i) <= 0 && scores.get(i).getScore() <= 0) {
 				trueNegative++;
-			if (stanfordScores.get(i) <= 0 && scores.get(i).getScore() > 0)
+				s.nextLine();
+			}
+			if (stanfordScores.get(i) <= 0 && scores.get(i).getScore() > 0) {
 				falseNegative++; 
+				s.nextLine();
+			}
 			List<ScoreNode> dependents = scores.get(i).getDependents();
 			q.addAll(dependents);
 			
 			while (!q.isEmpty()) {
 				ScoreNode dependent = q.poll();
+				if (stanfordScores.get(i) > 0 && scores.get(i).getScore() <= 0) {
+					System.out.println(dependent.getLemma() + " " + dependent.getMaxIntensity() + " "+ dependent.getScore());
+				}	
 				
-//				System.out.print(dependent.getLemma() + " " + dependent.getMaxIntensity() + " "+ dependent.getScore() + "\n");
 				for (ScoreNode d : dependent.getDependents()) {
 					q.addFirst(d);
 				}
 			}
-//			System.out.println();
+			System.out.println();
 		}
+//		double negatives = falsePositive + trueNegative;
+//		double positives = truePositive + falseNegative;
+//		System.out.println("Negatives" + negatives);
+//		System.out.println("Positives" + positives);
+		
 		double accuracy = (truePositive+trueNegative)/(truePositive+trueNegative+falsePositive+falseNegative);
 		double recall = truePositive/(truePositive+falseNegative);
 		double precision = truePositive/(truePositive+falsePositive);
 		double f1 = (2*precision*recall)/(precision+recall);
 		System.out.println("Accuracy: " + accuracy + " recall: " +  recall + " precision: " + precision + " f1 = "+  f1);
+		System.out.println(a.parser.getWords().getSentimentListMap().get("exhilarate"));
+//		System.out.println(a.parser.getWords().get
 	}
 }

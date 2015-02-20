@@ -80,8 +80,9 @@ public class SentimentAnalyzer
 		// Find the absolute max score in the children, add it the parentScore (headScore) then find the greatest intensifier of the children and multiply it by the headscore 
 		// proceed to build up  - Johnny
 		//  head = (head + MaxScore(child))* MaxIntensity(children)
-		headNode.setScore(headNode.getScore() + headNode.getMaxScore()*headNode.getMaxIntensity());
-		
+		headNode.setScore((headNode.getScore() + headNode.getMaxScore())*headNode.getMaxIntensity());
+//		System.out.println(headNode.getLemma() + " " + headNode.getScore());
+		depScoreMap.put(head, headNode);
 		return headNode;
 	}
 	
@@ -94,7 +95,6 @@ public class SentimentAnalyzer
 			score = map.get(node.getLemma());
 		}
 		ScoreNode sNode = new ScoreNode(node.getLemma(), score, intensity);
-		depScoreMap.put(node, sNode);
 		return sNode;
 	}
 	

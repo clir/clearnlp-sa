@@ -21,7 +21,7 @@ public class ScoreNode {
 		double maxScore = 0;
 		for(int i = 0; i < dependents.size(); i++) {
 			Double childScore = dependents.get(i).getScore();
-			if (Math.abs(childScore-.5) > Math.abs(maxScore-.5)) 
+			if (Math.abs(childScore) > Math.abs(maxScore)) 
 				maxScore = childScore;
 		}
 		return maxScore;
@@ -35,6 +35,14 @@ public class ScoreNode {
 				maxIntensity = childIntensity ;
 		}
 //		System.out.println(maxIntensity);
+		return maxIntensity;
+	}
+	public double getSumIntensity() {
+		double maxIntensity = this.intensity;
+		for(int i = 0; i < dependents.size(); i++) {
+			Double childIntensity = dependents.get(i).getIntensity();
+			maxIntensity += childIntensity;
+		}
 		return maxIntensity;
 	}
 
