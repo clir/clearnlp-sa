@@ -14,7 +14,7 @@ public class Word implements Serializable {
 	private Map<Integer,Double> rawScores;
 	private Map<String,Double> sentimentExpression;
 	private List<Double> stanfordScores;
-	private Map<String,Double> intensifierwords;
+	private Map<String,Double> intensifierWords;
 	private Map<Integer,Integer> sentenceKeys;
 	
 	public Word() {
@@ -23,12 +23,12 @@ public class Word implements Serializable {
 		rawScores = new HashMap<>();
 		sentimentExpression = new HashMap<>();
 		stanfordScores = new ArrayList<>();
-		intensifierwords = new HashMap<>();
+		intensifierWords = new HashMap<>();
 		sentenceKeys = new HashMap<>();
 	}
 	
 	public void addIntensifierWords(String word, double intensity){
-		intensifierwords.put(word, intensity);
+		intensifierWords.put(word, intensity);
 	}
 	public void addStanfordScore(double score){
 		stanfordScores.add(score);
@@ -97,6 +97,54 @@ public class Word implements Serializable {
 	}
 	public int getSentenceSet(int key){
 		return sentenceKeys.get(key);
+	}
+
+	public Map<Integer, Double> getRawScores() {
+		return rawScores;
+	}
+
+	public void setRawScores(Map<Integer, Double> rawScores) {
+		this.rawScores = rawScores;
+	}
+
+	public Map<String, Double> getSentimentExpression() {
+		return sentimentExpression;
+	}
+
+	public void setSentimentExpression(Map<String, Double> sentimentExpression) {
+		this.sentimentExpression = sentimentExpression;
+	}
+
+	public Map<String, Double> getIntensifierWords() {
+		return intensifierWords;
+	}
+
+	public void setIntensifierwords(Map<String, Double> intensifierwords) {
+		this.intensifierWords = intensifierwords;
+	}
+
+	public Map<Integer, Integer> getSentenceKeys() {
+		return sentenceKeys;
+	}
+
+	public void setSentenceKeys(Map<Integer, Integer> sentenceKeys) {
+		this.sentenceKeys = sentenceKeys;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	public void setSentimentListMap(Map<String, List<Double>> sentimentListMap) {
+		this.sentimentListMap = sentimentListMap;
+	}
+
+	public void setWordBucket(Map<String, Double> wordBucket) {
+		this.wordBucket = wordBucket;
+	}
+
+	public void setStanfordScores(List<Double> stanfordScores) {
+		this.stanfordScores = stanfordScores;
 	}
 }
 

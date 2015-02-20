@@ -11,13 +11,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Parse {
-	
-	
 	
 	private Word words;
 	public Parse() {
@@ -29,7 +29,7 @@ public class Parse {
 		String trainFile = "src/Stanford Sentiment/trees/train.txt";
 		String rawscores = "src/Stanford Sentiment/stanfordSentimentTreebankRaw/rawscores_exp12.txt";
 		String sentexp = "src/Stanford Sentiment/stanfordSentimentTreebankRaw/sentlex_exp12.txt";
-//		String intensifierwords = "";
+		String intensifierwords = "intensifiers.txt";
 		//trimWords(new FileInputStream(trainFile));
 		parseStanfordTrees(words, new FileInputStream(trainFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
 //		parseStanfordTrees(words, new FileInputStream(devFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
@@ -40,21 +40,25 @@ public class Parse {
 		parseSentimentExpressions(new FileInputStream(sentexp));
 		//trimKey(new FileInputStream("src/Stanford Sentiment/stanfordSentimentTreebank/datasetSplit.txt"));
 		//writeSet(new File("src/Stanford Sentiment/stanfordSentimentTreebank/datasetSentences.txt"));
-		//parseIntensifiers(new FileInputStream(intensifierwords));
+		parseIntensifiers(new FileInputStream(intensifierwords));
 		words.putInBuckets();
 		
 	}
 	
 	
 	
-	private void parseIntensifiers(FileInputStream in) throws IOException{
-	Scanner read = new Scanner(in);
-	String s;
-	double intensity;
+	private void parseIntensifiers(FileInputStream in) throws IOException {
+		Scanner read = new Scanner(in);
+		String word;
+		double intensity;
 	
-	while(read.hasNext()){
-		
-	}
+		while(read.hasNextLine()) {
+			word = read.next();
+			intensity = Double.parseDouble(read.next());
+			words.addIntensifierWords(word, intensity);
+		}
+		read.close();
+		return;
 	}
 	
 	private void parseStanfordScores(FileInputStream in) throws IOException{
@@ -91,7 +95,7 @@ public class Parse {
 		while ((line = reader.readLine()) != null) {
 		split = line.split(" ");
 		double average = (Integer.parseInt(split[1])+Integer.parseInt(split[2])+Integer.parseInt(split[3]))/3;
-		words.addRawScore(Integer.parseInt(split[0]), average);
+		words.addRawScore(Integer.parseInt(split[0]), average/25);
 		}
 	}
 	
@@ -131,11 +135,8 @@ public class Parse {
 		String line;
 		Pattern regexpattern = Pattern.compile(pattern);
 		Matcher matches;
-		int count = 0;
 		while ((line = reader.readLine()) != null) {
 			matches = regexpattern.matcher(line);
-//			System.out.println(count++);
-
 			while(matches.find()) {
 				String StringPair = matches.group();
 				StringPair = StringPair.replaceAll("\\(", "").replaceAll("\\)","");
@@ -202,9 +203,10 @@ public class Parse {
 		}
 		lineScanner.close();
 	}
+	read.close();
 	devWriter.close();
 	testWriter.close();
-	devWriter.close();	
+	trainWriter.close();	
 	}
 	
 	public Word getWords() {

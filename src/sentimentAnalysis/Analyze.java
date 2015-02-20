@@ -17,7 +17,7 @@ public class Analyze {
 	
 	public Analyze() {
 		parser = new Parse();
-		analyzer = new SentimentAnalyzer();
+		analyzer = new SentimentAnalyzer(parser.getWords());
 	}
 	public static void main(String[] args) throws Exception {		
 		String trainDepTrees = "trainDepTree.txt";
@@ -35,6 +35,7 @@ public class Analyze {
 		for (int i = 0; i < scores.size(); i++) {
 			System.out.println(i+1 + " " + s.nextLine());
 			System.out.println(" calculated score: " + scores.get(i).getScore());
+			
 			System.out.println("real score: " + stanfordScores.get(i));
 			System.out.print(scores.get(i).getWordForm() + " " + scores.get(i).getMaxIntensity() + " "+ scores.get(i).getScore() + "\n");
 			List<ScoreNode> dependents = scores.get(i).getDependents();
@@ -42,6 +43,7 @@ public class Analyze {
 			
 			while (!q.isEmpty()) {
 				ScoreNode dependent = q.poll();
+				
 				System.out.print(dependent.getWordForm() + " " + dependent.getMaxIntensity() + " "+ dependent.getScore() + "\n");
 				for (ScoreNode d : dependent.getDependents()) {
 					q.addFirst(d);

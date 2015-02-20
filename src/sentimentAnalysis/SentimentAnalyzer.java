@@ -18,9 +18,11 @@ package sentimentAnalysis;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import parseCorpus.Word;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.reader.TSVReader;
@@ -31,9 +33,13 @@ import edu.emory.clir.clearnlp.reader.TSVReader;
 public class SentimentAnalyzer
 {
 	private List<ScoreNode> sentences;
+	private Map<DEPNode, ScoreNode> depScoreMap;
+	private Word words;
 	
-	public SentimentAnalyzer() {
+	public SentimentAnalyzer(Word words) {
 		sentences = new ArrayList<>();
+		depScoreMap = new HashMap<>();
+		this.words = words;
 	}
 	public void readDepTree(InputStream in, Map<String, Double> map) throws Exception
 	{
@@ -83,17 +89,31 @@ public class SentimentAnalyzer
 	protected ScoreNode getNode(DEPNode node, Map<String, Double> map)
 	{
 		double score = 0;
+		double intensity = getIntensity(node);
+		if (map.containsKey(node.getLemma())) {
+			score = map.get(node.getLemma());
+		}
+		ScoreNode sNode = new ScoreNode(node.getWordForm(), score, intensity);
+		depScoreMap.put(node, sNode);
+		return sNode;
+	}
+	
+	private double getIntensity(DEPNode node) {
 		double intensity = 1;
 		if(node.getLabel().equals("neg")) {
 			intensity = intensity*-1;
 		}
-		if (map.containsKey(node.getWordForm())) {
-			score = map.get(node.getWordForm());
+		if (words.getIntensifierWords().get(node.getLemma()) != null) {
+			intensity = words.getIntensifierWords().get(node.getLemma());
 		}
-		return new ScoreNode(node.getWordForm(), score, intensity);
+			
+		return intensity;
 	}
-	
 	protected List<ScoreNode> getSentences() {
 		return sentences;
+	}
+	
+	protected Map<DEPNode, ScoreNode> getDepScoreMap() {
+		return depScoreMap;
 	}
 }
