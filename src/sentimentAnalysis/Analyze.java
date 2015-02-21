@@ -1,26 +1,38 @@
 package sentimentAnalysis;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import edu.emory.clir.clearnlp.dependency.DEPLibEn;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import parseCorpus.Parse;
-import parseCorpus.Word;
+import parseCorpus.ScoresIntensifiers;
 
 public class Analyze {
-	SentimentAnalyzer sentimentAnalyzer;
-	Parse parser;
-	static double accuracy;
-
-	public Analyze() {
+	private SentimentAnalyzer sentimentAnalyzer;
+	private Parse parser;
+	private ScoresIntensifiers scoresIntensifiers;
+	private static double accuracy = 70.61382878645345;
+	private static boolean improved = false;
+	private static Writer trainWriter;
+	private static int right = 6005;
+	public Analyze() throws FileNotFoundException {
 		parser = new Parse();
-		sentimentAnalyzer = new SentimentAnalyzer(parser.getWords());
+		sentimentAnalyzer = new SentimentAnalyzer(parser.getScoresIntensifiers());
+		scoresIntensifiers = parser.getScoresIntensifiers();
+		trainWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File("results.txt"))));
 	}
 	public static void main(String[] args) throws Exception {		
 		Analyze analyze = new Analyze(); 
@@ -42,14 +54,16 @@ public class Analyze {
 //		analyze.sentimentAnalyzer.getLabelIntensity().put("advcl", 1d);
 //		analyze.sentimentAnalyzer.getLabelIntensity().put("appos", 1d);
 //		analyze.sentimentAnalyzer.getLabelIntensity().put("npadvmod", 1d);
-		System.out.println("part1");
-		analyze.sentimentAnalyzer.readDepTree(new FileInputStream(trainDepTrees), analyze.parser.getWords().getWordBucket());
+
+		analyze.sentimentAnalyzer.readDepTree(new FileInputStream(trainDepTrees), analyze.scoresIntensifiers.getWordBucket());
+//		Map<String, Double> copyIntensifierWords =  new HashMap<>(analyze.scoresIntensifiers.getIntensifierWords());
 		for (DEPNode depNode : analyze.sentimentAnalyzer.getDepScoreMap().keySet()) {
 			for (String label : testLabels) {
 				if (depNode.getLabel().equals(label)) {
 					for (double test = -5; test <= 5 ; test+=.2) {
-						analyze.sentimentAnalyzer.readDepTree(new FileInputStream(trainDepTrees), analyze.parser.getWords().getWordBucket());
-						analyze.parser.getWords().getIntensifierWords().put(depNode.getLemma(), test);
+						improved = false;
+//						analyze.scoresIntensifiers.setIntensifierWords(copyIntensifierWords);
+						analyze.scoresIntensifiers.getIntensifierWords().put(depNode.getLemma(), test);
 
 //						System.out.println("part1");
 
@@ -67,43 +81,43 @@ public class Analyze {
 						String trainFile = "trainFile.txt";
 						Scanner s = new Scanner(new File(trainFile));
 						List<ScoreNode> scores = analyze.sentimentAnalyzer.getSentences();
-						List<Double> stanfordScores = analyze.parser.getWords().getStanfordScores();
+						List<Double> stanfordScores = analyze.scoresIntensifiers.getStanfordScores();
 						Deque<ScoreNode> q = new ArrayDeque<>(); 
 
-						double min = 0;
-						double max = 0;
+//						double min = 0;
+//						double max = 0;
 						int correct = 0;
-						int incorrect = 0;
+//						int incorrect = 0;
 
 						for (int i = 0; i < scores.size(); i++) {
-							//			System.out.println(i+1 + " " + s.nextLine());
-							//			System.out.println(" calculated score: " + scores.get(i).getScore());
-							//			System.out.println("real score: " + stanfordScores.get(i));
-							//			System.out.print(scores.get(i).getLemma() + " " + scores.get(i).getMaxIntensity() + " "+ scores.get(i).getScore() + "\n");
-							if (stanfordScores.get(i) > 0 && scores.get(i).getScore() > 0) {
-								s.nextLine();
-							}
-							if (stanfordScores.get(i) > 0 && scores.get(i).getScore() <= 0) {
-								//				System.out.println(i+1 + " " + s.nextLine());
-								//				System.out.println("calculated score: " + scores.get(i).getScore());
-								//				System.out.println("real score: " + stanfordScores.get(i));
-								//				System.out.print("head: " + scores.get(i).getLemma() + " " + scores.get(i).getMaxIntensity() + " "+ scores.get(i).getScore() + "\n");
-							}
-							//			
-							if (stanfordScores.get(i) <= 0 && scores.get(i).getScore() > 0) {
-								s.nextLine();
-							}
-							if (stanfordScores.get(i) <= 0 && scores.get(i).getScore() <= 0) {
-								s.nextLine();
-							}
-
+//							//			System.out.println(i+1 + " " + s.nextLine());
+//							//			System.out.println(" calculated score: " + scores.get(i).getScore());
+//							//			System.out.println("real score: " + stanfordScores.get(i));
+//							//			System.out.print(scores.get(i).getLemma() + " " + scores.get(i).getMaxIntensity() + " "+ scores.get(i).getScore() + "\n");
+//							if (stanfordScores.get(i) > 0 && scores.get(i).getScore() > 0) {
+//								s.nextLine();
+//							}
+//							if (stanfordScores.get(i) > 0 && scores.get(i).getScore() <= 0) {
+//								//				System.out.println(i+1 + " " + s.nextLine());
+//								//				System.out.println("calculated score: " + scores.get(i).getScore());
+//								//				System.out.println("real score: " + stanfordScores.get(i));
+//								//				System.out.print("head: " + scores.get(i).getLemma() + " " + scores.get(i).getMaxIntensity() + " "+ scores.get(i).getScore() + "\n");
+//							}
+//							//			
+//							if (stanfordScores.get(i) <= 0 && scores.get(i).getScore() > 0) {
+//								s.nextLine();
+//							}
+//							if (stanfordScores.get(i) <= 0 && scores.get(i).getScore() <= 0) {
+//								s.nextLine();
+//							}
+//
 							if (stanfordScores.get(i) < 0 && scores.get(i).getScore() < 0)
 								correct++;
 							else if (stanfordScores.get(i) >= 0 && scores.get(i).getScore() >= 0)
 								correct++;
-							else {
-								incorrect++;
-							}
+//							else {
+//								incorrect++;
+//							}
 
 							List<ScoreNode> dependents = scores.get(i).getDependents();
 							q.addAll(dependents);
@@ -119,8 +133,8 @@ public class Analyze {
 								}
 							}
 //							System.out.println();
-							max = Math.max(max, scores.get(i).getScore());
-							min = Math.min(min, scores.get(i).getScore());
+//							max = Math.max(max, scores.get(i).getScore());
+//							min = Math.min(min, scores.get(i).getScore());
 							//			System.out.println();
 						}
 						//		System.out.println((8504d-sum)/(2d*8504d));
@@ -130,11 +144,18 @@ public class Analyze {
 						//		System.out.println("Positives" + positives);
 						//		analyze.sentimentAnalyzer.printCounts();
 						//		System.out.println("min " + min + " max " + max);
-						double newAccuracy = 100d*correct/(correct+incorrect);
-						if (newAccuracy > accuracy) {
-							accuracy = newAccuracy;
-							System.out.println("Accuracy: " + accuracy + " lemma: " + depNode.getLemma() + " test: " + test);
+//						System.out.println(correct);
+//						double newAccuracy = 100d*correct/(correct+incorrect);
+						if (correct > right) {
+							right = correct;
+							improved = true;
+//							accuracy = newAccuracy;
+							String cbuf = "Right: " + right + " lemma: " + depNode.getLemma() + " test: " + test;
+							System.out.println(cbuf);
+							Analyze.trainWriter.write(cbuf);
+							Analyze.trainWriter.flush();
 						}
+//						System.out.println("Accuracy: " + accuracy + " lemma: " + depNode.getLemma() + " test: " + test);
 
 						//				System.out.println(("correct " + correct));
 						//				System.out.println(("incorrect " + incorrect));
@@ -144,10 +165,15 @@ public class Analyze {
 						//		dumb baseline = 61.45343368
 						//		true baseline = 66.75682032
 						//						System.out.println(analyze.parser.getWords().getSentimentListMap().get("leave"));
+						s.close();
+					}
+					if (improved == false) {
+						analyze.scoresIntensifiers.getIntensifierWords().remove(depNode.getLemma());
 					}
 				}
-
 			}
 		}
+		System.out.println("Done");
+		Analyze.trainWriter.close();
 	}
 }

@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import parseCorpus.Word;
+import parseCorpus.ScoresIntensifiers;
 import edu.emory.clir.clearnlp.dependency.DEPLib;
 import edu.emory.clir.clearnlp.dependency.DEPLibEn;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
@@ -44,10 +44,10 @@ public class SentimentAnalyzer
 	private int count5;
 	private int count6;
 	private int count7;
-	private Word words;
+	private ScoresIntensifiers words;
 	
 	
-	public SentimentAnalyzer(Word words) {
+	public SentimentAnalyzer(ScoresIntensifiers words) {
 		sentences = new ArrayList<>();
 		depScoreMap = new HashMap<>();
 		labelIntensity = new HashMap<>();
@@ -182,10 +182,10 @@ public class SentimentAnalyzer
 	public void setLabelIntensity(Map<String, Double> labelIntensity) {
 		this.labelIntensity = labelIntensity;
 	}
-	public Word getWords() {
+	public ScoresIntensifiers getWords() {
 		return words;
 	}
-	public void setWords(Word words) {
+	public void setWords(ScoresIntensifiers words) {
 		this.words = words;
 	}
 	public void setSentences(List<ScoreNode> sentences) {

@@ -18,57 +18,57 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Parse {
-	
-	private Word words;
+
+	private ScoresIntensifiers scoresIntensifiers;
 	public Parse() {
-		words = new Word();
+		scoresIntensifiers = new ScoresIntensifiers();
 	}
 
 	public void parse() throws Exception {
-//		String devFile = "src/Stanford Sentiment/trees/dev.txt";
+		//		String devFile = "src/Stanford Sentiment/trees/dev.txt";
 		String trainFile = "src/Stanford Sentiment/trees/train.txt";
 		String rawscores = "src/Stanford Sentiment/stanfordSentimentTreebankRaw/rawscores_exp12.txt";
 		String sentexp = "src/Stanford Sentiment/stanfordSentimentTreebankRaw/sentlex_exp12.txt";
 		String intensifierwords = "intensifiers.txt";
 		//trimWords(new FileInputStream(trainFile));
-		parseStanfordTrees(words, new FileInputStream(trainFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
-//		parseStanfordTrees(words, new FileInputStream(devFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
-//		parseSubjectivity(words);
+		parseStanfordTrees(scoresIntensifiers, new FileInputStream(trainFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
+		//		parseStanfordTrees(scoresIntensifiers, new FileInputStream(devFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
+		//		parseSubjectivity(scoresIntensifiers);
 		parseStanfordScores(new FileInputStream(trainFile));
-//		parseStanfordScores(new FileInputStream(devFile));
+		//		parseStanfordScores(new FileInputStream(devFile));
 		parseRawScores(new FileInputStream(rawscores));
 		parseSentimentExpressions(new FileInputStream(sentexp));
 		//trimKey(new FileInputStream("src/Stanford Sentiment/stanfordSentimentTreebank/datasetSplit.txt"));
 		//writeSet(new File("src/Stanford Sentiment/stanfordSentimentTreebank/datasetSentences.txt"));
 		parseIntensifiers(new FileInputStream(intensifierwords));
-		words.putInBuckets();
+		scoresIntensifiers.putInBuckets();
 	}
-	
-	
-	
+
+
+
 	private void parseIntensifiers(FileInputStream in) throws IOException {
 		Scanner read = new Scanner(in);
 		String word;
 		double intensity;
-	
+
 		while(read.hasNextLine()) {
 			word = read.next();
 			intensity = Double.parseDouble(read.next());
-			words.getIntensifierWords().put(word, intensity);
+			scoresIntensifiers.getIntensifierWords().put(word, intensity);
 		}
 		read.close();
 		return;
 	}
-	
+
 	private void parseStanfordScores(FileInputStream in) throws IOException{
 		Scanner read = new Scanner(in);
 		int count = 0;
 		while(read.hasNext() && count < 8504){
 			String s = read.nextLine();
 			int number = Integer.parseInt(s.substring(1, 2));
-//			System.out.println(number);
+			//			System.out.println(number);
 			double normalized = (number/2d)-1;
-			words.addStanfordScore(normalized);
+			scoresIntensifiers.addStanfordScore(normalized);
 			count++;
 		}
 		read.close();
@@ -81,56 +81,56 @@ public class Parse {
 		while(read.hasNext()){
 			currentIndex=read.nextInt();
 			currentString=read.nextLine();
-			words.addExpression(currentIndex, currentString);
+			scoresIntensifiers.addExpression(currentIndex, currentString);
 		}
 		read.close();
 	}
-		
+
 
 	private void parseRawScores(FileInputStream in) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		String line;
 		String[] split;
 		while ((line = reader.readLine()) != null) {
-		split = line.split(" ");
-		double average = (Integer.parseInt(split[1])+Integer.parseInt(split[2])+Integer.parseInt(split[3]))/3;
-		words.addRawScore(Integer.parseInt(split[0]), average/25);
+			split = line.split(" ");
+			double average = (Integer.parseInt(split[1])+Integer.parseInt(split[2])+Integer.parseInt(split[3]))/3;
+			scoresIntensifiers.addRawScore(Integer.parseInt(split[0]), average/25);
 		}
 	}
-	
-	
-	private void parseSubjectivity(Word words) throws Exception {
+
+
+	private void parseSubjectivity(ScoresIntensifiers scoresIntensifiers) throws Exception {
 		File file = new File("subjectivity.txt");
 		Scanner scanner =  new Scanner(file);
 		while (scanner.hasNextLine()){
 			Scanner lineScanner = new Scanner(scanner.nextLine());
-		    lineScanner.useDelimiter(" ");
-		    if (lineScanner.hasNext()){
-		    	lineScanner.next();
-		    	lineScanner.next();
-		    	String word = lineScanner.next();
-		    	lineScanner.next();
-		    	lineScanner.next();
-		    	String polarity = lineScanner.next();
-		    	double score = 0;
-		    	if (polarity.substring(14).equals("positive"))
-		    		score = 4d;
-		    	if (polarity.substring(14).equals("negative"))
-			    	score = 0d;
-		    	words.addToSentimentList(word.substring(6), score);
-		    	lineScanner.close();
-		    }
-		    else {
-		      System.out.println("Empty or invalid line. Unable to process.");
-		    }
-		  }
+			lineScanner.useDelimiter(" ");
+			if (lineScanner.hasNext()){
+				lineScanner.next();
+				lineScanner.next();
+				String word = lineScanner.next();
+				lineScanner.next();
+				lineScanner.next();
+				String polarity = lineScanner.next();
+				double score = 0;
+				if (polarity.substring(14).equals("positive"))
+					score = 4d;
+				if (polarity.substring(14).equals("negative"))
+					score = 0d;
+				scoresIntensifiers.addToSentimentList(word.substring(6), score);
+				lineScanner.close();
+			}
+			else {
+				System.out.println("Empty or invalid line. Unable to process.");
+			}
+		}
 		scanner.close();
-		
+
 	}
-	private void parseStanfordTrees(Word word, InputStream in, String pattern) throws Exception {
-//		new InputStreamReader(in).
+	private void parseStanfordTrees(ScoresIntensifiers word, InputStream in, String pattern) throws Exception {
+		//		new InputStreamReader(in).
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-//		System.out.println(reader.lines().count());
+		//		System.out.println(reader.lines().count());
 		String line;
 		Pattern regexpattern = Pattern.compile(pattern);
 		Matcher matches;
@@ -140,7 +140,7 @@ public class Parse {
 				String StringPair = matches.group();
 				StringPair = StringPair.replaceAll("\\(", "").replaceAll("\\)","");
 				String[] split = StringPair.split(" ");
-//				System.out.println(split[1] + "" + split[0]);
+				//				System.out.println(split[1] + "" + split[0]);
 				word.addToSentimentList(split[1],Integer.parseInt(split[0]));
 			}
 		}
@@ -149,9 +149,9 @@ public class Parse {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(file));
 		String line;
 		File sentText = new File("Sentences.txt");
-        FileOutputStream Output = new FileOutputStream(sentText);
-        OutputStreamWriter osw = new OutputStreamWriter(Output);
-        Writer w = new BufferedWriter(osw);
+		FileOutputStream Output = new FileOutputStream(sentText);
+		OutputStreamWriter osw = new OutputStreamWriter(Output);
+		Writer w = new BufferedWriter(osw);
 		while ((line = reader.readLine()) != null) {
 			line = line.replaceAll("[(][0-9]", "").replaceAll("\\)","");
 			line.trim();
@@ -173,42 +173,42 @@ public class Parse {
 		while(read.hasNext()){
 			key = read.nextInt();
 			set = read.nextInt();
-			words.addSentenceKey(key, set);
-			}
+			scoresIntensifiers.addSentenceKey(key, set);
+		}
 		read.close();
-		}
-	
+	}
+
 	private void writeSet(File fileInputStream) throws IOException {
-	Scanner read = new Scanner(fileInputStream);
-	Writer devWriter = new BufferedWriter( new OutputStreamWriter(new FileOutputStream( new File("devFile.txt"))));
-	Writer testWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File("testFile.txt"))));
-	Writer trainWriter = new BufferedWriter( new OutputStreamWriter(new FileOutputStream(new File("trainFile.txt"))));
-	int sentenceNum,sentenceSetNum;
-	String sentence;
-	while(read.hasNextLine()){
-		Scanner lineScanner = new Scanner(read.nextLine());
-		sentenceNum = lineScanner.nextInt();
-		lineScanner.useDelimiter("\\t");
-		sentenceSetNum = words.getSentenceSet(sentenceNum);
-		sentence = lineScanner.next();
-		if(sentenceSetNum == 1){
-			trainWriter.write(sentence+"\n");
+		Scanner read = new Scanner(fileInputStream);
+		Writer devWriter = new BufferedWriter( new OutputStreamWriter(new FileOutputStream( new File("devFile.txt"))));
+		Writer testWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File("testFile.txt"))));
+		Writer trainWriter = new BufferedWriter( new OutputStreamWriter(new FileOutputStream(new File("trainFile.txt"))));
+		int sentenceNum,sentenceSetNum;
+		String sentence;
+		while(read.hasNextLine()){
+			Scanner lineScanner = new Scanner(read.nextLine());
+			sentenceNum = lineScanner.nextInt();
+			lineScanner.useDelimiter("\\t");
+			sentenceSetNum = scoresIntensifiers.getSentenceSet(sentenceNum);
+			sentence = lineScanner.next();
+			if(sentenceSetNum == 1){
+				trainWriter.write(sentence+"\n");
+			}
+			if(sentenceSetNum == 2){
+				testWriter.write(sentence+"\n");
+			}
+			if(sentenceSetNum == 3){
+				devWriter.write(sentence+"\n");
+			}
+			lineScanner.close();
 		}
-		if(sentenceSetNum == 2){
-			testWriter.write(sentence+"\n");
-		}
-		if(sentenceSetNum == 3){
-			devWriter.write(sentence+"\n");
-		}
-		lineScanner.close();
+		read.close();
+		devWriter.close();
+		testWriter.close();
+		trainWriter.close();	
 	}
-	read.close();
-	devWriter.close();
-	testWriter.close();
-	trainWriter.close();	
-	}
-	
-	public Word getWords() {
-		return words;
+
+	public ScoresIntensifiers getScoresIntensifiers() {
+		return scoresIntensifiers;
 	}
 }

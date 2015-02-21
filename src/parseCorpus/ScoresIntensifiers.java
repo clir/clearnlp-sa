@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class Word implements Serializable {
+public class ScoresIntensifiers implements Serializable {
 	private static final long serialVersionUID = 844801659782414882L;
 	private Map<String,List<Double>> sentimentListMap;
 	private Map<String,Double> wordBucket;
@@ -17,7 +17,7 @@ public class Word implements Serializable {
 	private Map<String,Double> intensifierWords;
 	private Map<Integer,Integer> sentenceKeys;
 	
-	public Word() {
+	public ScoresIntensifiers() {
 		sentimentListMap = new HashMap<>();
 		wordBucket = new HashMap<>();
 		rawScores = new HashMap<>();
@@ -121,7 +121,7 @@ public class Word implements Serializable {
 		return intensifierWords;
 	}
 
-	public void setIntensifierwords(Map<String, Double> intensifierwords) {
+	public void setIntensifierWords(Map<String, Double> intensifierwords) {
 		this.intensifierWords = intensifierwords;
 	}
 
