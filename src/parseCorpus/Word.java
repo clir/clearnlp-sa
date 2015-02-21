@@ -27,9 +27,6 @@ public class Word implements Serializable {
 		sentenceKeys = new HashMap<>();
 	}
 	
-	public void addIntensifierWords(String word, double intensity){
-		intensifierWords.put(word, intensity);
-	}
 	public void addStanfordScore(double score){
 		stanfordScores.add(score);
 	}

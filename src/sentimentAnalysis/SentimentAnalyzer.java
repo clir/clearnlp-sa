@@ -136,34 +136,34 @@ public class SentimentAnalyzer
 	
 	private double getIntensity(DEPNode node) {
 		double intensity = 1;
-		if(node.getLabel().equals("neg")) {
-			intensity = labelIntensity.get("neg");
-			count1++;
-		}
-		if(node.getLabel().equals("cc")) {
-			intensity = labelIntensity.get("cc");
-			count2++;
-		}
-		if(node.getLabel().equals("advmod")) {
-			intensity = labelIntensity.get("advmod");
-			count3++;
-		}
-		if(node.getLabel().equals("amod")) {
-			intensity = labelIntensity.get("amod");
-			count4++;
-		}
-		if(node.getLabel().equals("advcl")) {
-			intensity = labelIntensity.get("advcl");
-			count5++;
-		}
-		if(node.getLabel().equals("appos")) {
-			intensity = labelIntensity.get("appos");
-			count6++;
-		}
-		if(node.getLabel().equals("npadvmod")) {
-			intensity = labelIntensity.get("npadvmod");
-			count7++;
-		}
+//		if(node.getLabel().equals("neg")) {
+//			intensity = labelIntensity.get("neg");
+//			count1++;
+//		}
+//		if(node.getLabel().equals("cc")) {
+//			intensity = labelIntensity.get("cc");
+//			count2++;
+//		}
+//		if(node.getLabel().equals("advmod")) {
+//			intensity = labelIntensity.get("advmod");
+//			count3++;
+//		}
+//		if(node.getLabel().equals("amod")) {
+//			intensity = labelIntensity.get("amod");
+//			count4++;
+//		}
+//		if(node.getLabel().equals("advcl")) {
+//			intensity = labelIntensity.get("advcl");
+//			count5++;
+//		}
+//		if(node.getLabel().equals("appos")) {
+//			intensity = labelIntensity.get("appos");
+//			count6++;
+//		}
+//		if(node.getLabel().equals("npadvmod")) {
+//			intensity = labelIntensity.get("npadvmod");
+//			count7++;
+//		}
 		if (words.getIntensifierWords().get(node.getLemma()) != null) {
 			intensity = words.getIntensifierWords().get(node.getLemma());
 		}

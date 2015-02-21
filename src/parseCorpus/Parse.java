@@ -54,7 +54,7 @@ public class Parse {
 		while(read.hasNextLine()) {
 			word = read.next();
 			intensity = Double.parseDouble(read.next());
-			words.addIntensifierWords(word, intensity);
+			words.getIntensifierWords().put(word, intensity);
 		}
 		read.close();
 		return;
