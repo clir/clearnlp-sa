@@ -13,26 +13,33 @@ import parseCorpus.Parse;
 import parseCorpus.Word;
 
 public class Analyze {
-	SentimentAnalyzer analyzer;
+	SentimentAnalyzer sentimentAnalyzer;
 	Parse parser;
 	
 	public Analyze() {
 		parser = new Parse();
-		analyzer = new SentimentAnalyzer(parser.getWords());
+		sentimentAnalyzer = new SentimentAnalyzer(parser.getWords());
 	}
 	public static void main(String[] args) throws Exception {		
 		String trainDepTrees = "trainDepTree.txt";
 		String devDepTrees = "devDepTree.txt";
 		String oneSentenceDep = "oneSentenceDepTest.txt";
-		Analyze a = new Analyze(); 
-		a.parser.parse();
-		a.analyzer.readDepTree(new FileInputStream(trainDepTrees), a.parser.getWords().getWordBucket());
+		Analyze analyze = new Analyze(); 
+		analyze.parser.parse();
+		analyze.sentimentAnalyzer.getLabelIntensity().put("neg", 1d);
+		analyze.sentimentAnalyzer.getLabelIntensity().put("cc", 1d);
+		analyze.sentimentAnalyzer.getLabelIntensity().put("advmod", 1d);
+		analyze.sentimentAnalyzer.getLabelIntensity().put("amod", 1d);
+		analyze.sentimentAnalyzer.getLabelIntensity().put("advcl", 1d);
+		analyze.sentimentAnalyzer.getLabelIntensity().put("appos", 1d);
+		analyze.sentimentAnalyzer.getLabelIntensity().put("npadvmod", 1d);
+		analyze.sentimentAnalyzer.readDepTree(new FileInputStream(trainDepTrees), analyze.parser.getWords().getWordBucket());
 //		a.analyzer.readDepTree(new FileInputStream(devDepTrees), a.parser.getWords().getWordBucket());
 //		a.analyzer.readDepTree(new FileInputStream(oneSentenceDep), a.parser.getWords().getWordBucket());
 //		String trainFile = "trainFile.txt";
 //		Scanner s = new Scanner(new File(trainFile));
-		List<ScoreNode> scores = a.analyzer.getSentences();
-		List<Double> stanfordScores = a.parser.getWords().getStanfordScores();
+		List<ScoreNode> scores = analyze.sentimentAnalyzer.getSentences();
+		List<Double> stanfordScores = analyze.parser.getWords().getStanfordScores();
 		Deque<ScoreNode> q = new ArrayDeque<>(); 
 		double truePositive = 0;
 		double trueNegative= 0;
@@ -103,8 +110,8 @@ public class Analyze {
 //		double positives = truePositive + falseNegative;
 //		System.out.println("Negatives" + negatives);
 //		System.out.println("Positives" + positives);
+		analyze.sentimentAnalyzer.printCounts();
 		System.out.println("min " + min + " max " + max);
-		
 		double accuracy = 100d*correct/(correct+incorrect);
 				System.out.println(("correct " + correct));
 				System.out.println(("incorrect " + incorrect));

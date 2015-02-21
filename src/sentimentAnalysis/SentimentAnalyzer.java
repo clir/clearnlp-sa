@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import parseCorpus.Word;
 import edu.emory.clir.clearnlp.dependency.DEPLib;
@@ -35,13 +36,31 @@ public class SentimentAnalyzer
 {
 	private List<ScoreNode> sentences;
 	private Map<DEPNode, ScoreNode> depScoreMap;
+	private Map <String, Double> labelIntensity;
+	private int count1;
+	private int count2;
+	private int count3;
+	private int count4;
+	private int count5;
+	private int count6;
+	private int count7;
 	private Word words;
+	
 	
 	public SentimentAnalyzer(Word words) {
 		sentences = new ArrayList<>();
 		depScoreMap = new HashMap<>();
+		labelIntensity = new HashMap<>();
 		this.words = words;
+		count1 = 0;
+		count2 = 0;
+		count3 = 0;
+		count4 = 0;
+		count5 = 0;
+		count6 = 0;
+		count7 = 0;
 	}
+	
 	public void readDepTree(InputStream in, Map<String, Double> map) throws Exception
 	{
 		// 7 Column Tree
@@ -77,20 +96,25 @@ public class SentimentAnalyzer
 			ScoreNode newNode = analyzeHead(child, map);
 			childrenNodes.add(newNode);
 		}
-		for (ScoreNode child : childrenNodes)
+		for (ScoreNode child : childrenNodes) {
 			child.setParent(scoreNode);
+			scoreNode.getLabelCounts().compute(child.getLabel(), (k,v) -> v != null ? v++ : 1);  
+			for (Entry<String, Integer> entry : child.getLabelCounts().entrySet()) {
+				scoreNode.getLabelCounts().compute(entry.getKey(), (k,v) -> v != null ? v+= entry.getValue() : 1);  
+			}
+		}
 		scoreNode.setDependents(childrenNodes);
 		// Find the absolute max score in the children, add it the parentScore (headScore) then find the greatest intensifier of the children and multiply it by the headscore 
 		// proceed to build up  - Johnny
-		//  head = (head + MaxScore(child))* MaxIntensity(children)
-//		if (!sentences.contains(scoreNode))
-//		scoreNode.setScore(scoreNode.getSumScore()*scoreNode.getMaxIntensity()); // 70.66086547507055
+		
+		scoreNode.setScore(scoreNode.getSumScore()*scoreNode.getMaxIntensity()); // 70.66086547507055
+
 //		scoreNode.setScore(scoreNode.getSumScore()); // Accuracy: 70.61382878645344
+
 //		scoreNode.setScore((scoreNode.getScore() + scoreNode.getMaxScore(depScoreMap, depNode))*scoreNode.getMaxIntensity()); // 68.05032925682032
-		int s = scoreNode.getDependents().size();
-		if (s == 0) s++;
-//		scoreNode.setScore(scoreNode.getSumScore()/s*scoreNode.getMaxIntensity());  // 69.4379115710254
+
 //		scoreNode.setScore((scoreNode.getScore() + scoreNode.getMaxScore(depScoreMap, depNode))); // 68.03857008466603
+		
 		depScoreMap.put(depNode, scoreNode);
 
 //		depNode.getSubNodeList()
@@ -99,34 +123,78 @@ public class SentimentAnalyzer
 	}
 	
 	//For the current node we find the score by getting the sentiment score from the bucket, we return the ScoreNode of the word with an intensifier
-	protected ScoreNode getNode(DEPNode node, Map<String, Double> map)
+	private ScoreNode getNode(DEPNode node, Map<String, Double> map)
 	{
 		double score = 0;
 		double intensity = getIntensity(node);
 		if (map.containsKey(node.getLemma())) {
 			score = map.get(node.getLemma());
 		}
-		ScoreNode sNode = new ScoreNode(node.getLemma(), score, intensity);
+		ScoreNode sNode = new ScoreNode(node.getLemma(), score, intensity, node.getLabel());
 		return sNode;
 	}
 	
 	private double getIntensity(DEPNode node) {
 		double intensity = 1;
-//		if(node.getLabel().equals("neg")) {
-//			intensity = intensity*-1;
-//			System.out.println("neg");
-//		}
+		if(node.getLabel().equals("neg")) {
+			intensity = labelIntensity.get("neg");
+			count1++;
+		}
+		if(node.getLabel().equals("cc")) {
+			intensity = labelIntensity.get("cc");
+			count2++;
+		}
+		if(node.getLabel().equals("advmod")) {
+			intensity = labelIntensity.get("advmod");
+			count3++;
+		}
+		if(node.getLabel().equals("amod")) {
+			intensity = labelIntensity.get("amod");
+			count4++;
+		}
+		if(node.getLabel().equals("advcl")) {
+			intensity = labelIntensity.get("advcl");
+			count5++;
+		}
+		if(node.getLabel().equals("appos")) {
+			intensity = labelIntensity.get("appos");
+			count6++;
+		}
+		if(node.getLabel().equals("npadvmod")) {
+			intensity = labelIntensity.get("npadvmod");
+			count7++;
+		}
 		if (words.getIntensifierWords().get(node.getLemma()) != null) {
 			intensity = words.getIntensifierWords().get(node.getLemma());
 		}
-			
 		return intensity;
 	}
-	protected List<ScoreNode> getSentences() {
+	public List<ScoreNode> getSentences() {
 		return sentences;
 	}
 	
-	protected Map<DEPNode, ScoreNode> getDepScoreMap() {
+	public Map<DEPNode, ScoreNode> getDepScoreMap() {
 		return depScoreMap;
+	}
+	public Map<String, Double> getLabelIntensity() {
+		return labelIntensity;
+	}
+	public void setLabelIntensity(Map<String, Double> labelIntensity) {
+		this.labelIntensity = labelIntensity;
+	}
+	public Word getWords() {
+		return words;
+	}
+	public void setWords(Word words) {
+		this.words = words;
+	}
+	public void setSentences(List<ScoreNode> sentences) {
+		this.sentences = sentences;
+	}
+	public void setDepScoreMap(Map<DEPNode, ScoreNode> depScoreMap) {
+		this.depScoreMap = depScoreMap;
+	}
+	public void printCounts() {
+		System.out.println("neg: " + count1 + " cc: " + count2 + " advmod: " +  count3 + " amod: " + count4 + " advcl " + count5 + " appos " + count6 + " npadvmod " + count7);
 	}
 }

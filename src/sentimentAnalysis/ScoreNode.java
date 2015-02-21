@@ -1,5 +1,6 @@
 package sentimentAnalysis;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,11 +14,15 @@ public class ScoreNode {
 	private double intensity;
 	private List<ScoreNode> dependents;
 	private ScoreNode parent;
+	private String label;
+	private Map<String, Integer> labelCounts;
 	
-	public ScoreNode(String lemma, double score, double intensity) {
+	public ScoreNode(String lemma, double score, double intensity, String label) {
 		this.lemma = lemma;
 		this.score = score;
 		this.intensity = intensity;
+		this.label = label;
+		this.labelCounts = new HashMap<>();
 	}
 	
 	public ScoreNode(ScoreNode node) {
@@ -136,5 +141,25 @@ public class ScoreNode {
 	public int compareTo(ScoreNode o)
 	{
 		return MathUtils.signum(this.score - o.score);
+	}
+
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	public void setLemma(String lemma) {
+		this.lemma = lemma;
+	}
+
+	public Map<String, Integer> getLabelCounts() {
+		return labelCounts;
+	}
+
+	public void setLabelCounts(Map<String, Integer> labelCounts) {
+		this.labelCounts = labelCounts;
 	}
 }
