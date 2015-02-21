@@ -1,7 +1,10 @@
 package sentimentAnalysis;
 
 import java.util.List;
+import java.util.Map;
 
+import edu.emory.clir.clearnlp.dependency.DEPLibEn;
+import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.util.MathUtils;
 
 public class ScoreNode {
@@ -17,18 +20,44 @@ public class ScoreNode {
 		this.intensity = intensity;
 	}
 	
-	public double getMaxScore() {
+	public ScoreNode(ScoreNode node) {
+		this.dependents = node.getDependents();
+		this.lemma = node.getLemma();
+		this.score = node.getScore();
+		this.intensity = node.getIntensity();
+		this.parent = node.getParent();
+	}
+
+	public double getMaxScore(Map<DEPNode, ScoreNode> depScoreMap, DEPNode depNode) {
 		double maxScore = 0;
+		double childScore = 0;
 		for(int i = 0; i < dependents.size(); i++) {
-			Double childScore = dependents.get(i).getScore();
-			if (Math.abs(childScore) > Math.abs(maxScore)) 
+			childScore = dependents.get(i).getScore();
+			
+			if (Math.abs(childScore) > Math.abs(maxScore)) {
 				maxScore = childScore;
+			}
 		}
+		
+		// conjunctions
+		List<DEPNode> dcc = depNode.getDependentListByLabel(DEPLibEn.DEP_CC);
+		if (!dcc.isEmpty()) {
+			List<DEPNode> dconj = depNode.getDependentListByLabel(DEPLibEn.DEP_CONJ);
+			if (depScoreMap.get(dcc.get(0)).getIntensity() == 1 && !dcc.get(0).getWordForm().equals("and") && !dcc.get(0).getWordForm().equals("or"))
+//				System.out.println(depScoreMap.get(dcc.get(0)));
+			if (!dconj.isEmpty()) {
+				childScore = depScoreMap.get(dconj.get(0)).getScore() * depScoreMap.get(dcc.get(0)).getIntensity();
+			}
+		}
+		if (Math.abs(childScore) > Math.abs(maxScore)) {
+			maxScore = childScore;
+		}
+		
 		return maxScore;
 	}
 	
 	public double getMaxIntensity() {
-		double maxIntensity = this.intensity;
+		double maxIntensity = 1;
 		for(int i = 0; i < dependents.size(); i++) {
 			Double childIntensity = dependents.get(i).getIntensity();
 			if (Math.abs(childIntensity) > Math.abs(maxIntensity)) 
@@ -44,6 +73,15 @@ public class ScoreNode {
 			maxIntensity += childIntensity;
 		}
 		return maxIntensity;
+	}
+
+	public double getSumScore() {
+		double sumScore = this.score;
+		for(int i = 0; i < dependents.size(); i++) {
+			Double childScore = dependents.get(i).getScore();
+			sumScore += childScore;
+		}
+		return sumScore;
 	}
 
 	public String getLemma() {

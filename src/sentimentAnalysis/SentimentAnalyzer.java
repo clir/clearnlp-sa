@@ -17,18 +17,19 @@ package sentimentAnalysis;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import parseCorpus.Word;
+import edu.emory.clir.clearnlp.dependency.DEPLib;
+import edu.emory.clir.clearnlp.dependency.DEPLibEn;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.reader.TSVReader;
 
 /**
- * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
+ * called by Analyze
  */
 public class SentimentAnalyzer
 {
@@ -54,7 +55,7 @@ public class SentimentAnalyzer
 			analyze(tree, map);
 		}
 	}
-	
+
 	public void analyze(DEPTree tree, Map<String, Double> map)
 	{
 		//Get the list of root nodes for the current tree(sentence)
@@ -65,25 +66,36 @@ public class SentimentAnalyzer
 		sentences.add(headNode);
 	}
 	
-	private ScoreNode analyzeHead(DEPNode head, Map<String, Double> map)
+	private ScoreNode analyzeHead(DEPNode depNode, Map<String, Double> map)
 	{
 		//Get the ScoreNode of the current DEPNode passed 
-		ScoreNode headNode = getNode(head, map);
+		ScoreNode scoreNode = getNode(depNode, map);
 		List<ScoreNode> childrenNodes = new ArrayList<>();
 		
 		//For each dependent(child) analyze recursively
-		for (DEPNode child : head.getDependentList())
-			childrenNodes.add(analyzeHead(child, map));
+		for (DEPNode child : depNode.getDependentList()) {
+			ScoreNode newNode = analyzeHead(child, map);
+			childrenNodes.add(newNode);
+		}
 		for (ScoreNode child : childrenNodes)
-			child.setParent(headNode);
-		headNode.setDependents(childrenNodes);
+			child.setParent(scoreNode);
+		scoreNode.setDependents(childrenNodes);
 		// Find the absolute max score in the children, add it the parentScore (headScore) then find the greatest intensifier of the children and multiply it by the headscore 
 		// proceed to build up  - Johnny
 		//  head = (head + MaxScore(child))* MaxIntensity(children)
-		headNode.setScore((headNode.getScore() + headNode.getMaxScore())*headNode.getMaxIntensity());
-//		System.out.println(headNode.getLemma() + " " + headNode.getScore());
-		depScoreMap.put(head, headNode);
-		return headNode;
+//		if (!sentences.contains(scoreNode))
+//		scoreNode.setScore(scoreNode.getSumScore()*scoreNode.getMaxIntensity()); // 70.66086547507055
+//		scoreNode.setScore(scoreNode.getSumScore()); // Accuracy: 70.61382878645344
+//		scoreNode.setScore((scoreNode.getScore() + scoreNode.getMaxScore(depScoreMap, depNode))*scoreNode.getMaxIntensity()); // 68.05032925682032
+		int s = scoreNode.getDependents().size();
+		if (s == 0) s++;
+//		scoreNode.setScore(scoreNode.getSumScore()/s*scoreNode.getMaxIntensity());  // 69.4379115710254
+//		scoreNode.setScore((scoreNode.getScore() + scoreNode.getMaxScore(depScoreMap, depNode))); // 68.03857008466603
+		depScoreMap.put(depNode, scoreNode);
+
+//		depNode.getSubNodeList()
+//		
+		return scoreNode;
 	}
 	
 	//For the current node we find the score by getting the sentiment score from the bucket, we return the ScoreNode of the word with an intensifier

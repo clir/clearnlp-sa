@@ -44,8 +44,6 @@ public class Word implements Serializable {
 	//1/2x-1 --> normalize to -1 and 1
 	public void addToSentimentList(String word, double score) {
 		double s = (.5*score)-1;
-//		if (word.equals("exhilarate"))
-//			System.out.println("exhilarate: " + score);
 		if(!sentimentListMap.containsKey(word))
 		{
 			List<Double> tmp = new ArrayList<>();
@@ -86,6 +84,11 @@ public class Word implements Serializable {
 	public void putInBuckets() {
 		for (Entry<String, List<Double>> entry : sentimentListMap.entrySet()) {
 			double average = getAverageSentiment(entry.getValue());
+//			if (average < 0)
+//				average = -1;
+//			else if (average > 0) {
+//				average = 1;
+//			}
 			wordBucket.put(entry.getKey(), average);
 		}
 	}

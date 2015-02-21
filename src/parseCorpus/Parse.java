@@ -33,7 +33,7 @@ public class Parse {
 		//trimWords(new FileInputStream(trainFile));
 		parseStanfordTrees(words, new FileInputStream(trainFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
 //		parseStanfordTrees(words, new FileInputStream(devFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
-		parseSubjectivity(words);
+//		parseSubjectivity(words);
 		parseStanfordScores(new FileInputStream(trainFile));
 //		parseStanfordScores(new FileInputStream(devFile));
 		parseRawScores(new FileInputStream(rawscores));
