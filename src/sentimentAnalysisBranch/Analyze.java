@@ -36,6 +36,7 @@ public class Analyze {
 		analyze.getSentDS().readWordSentiments();
 
 		List<ScoreNode> temp;
+		
 		temp = analyze.getAnalyzer().calculateScores(new FileInputStream(trainDepTrees),analyze.getSentDS().getWordSentiments(),analyze.getSentDS().getLabelIntensifier(),analyze.getSentDS().getIntensifiers());		
 		analyze.printResults(new File(trainFile), temp);
 
@@ -116,32 +117,6 @@ public class Analyze {
 		return improved;
 		
 		}		
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public sentimentDS getSentDS(){
 		return this.sentDS;
 	}

@@ -57,9 +57,20 @@ public class sentimentAnalyzer {
 			}
 		}
 		scoreNode.setDependents(childrenNodes);
-		scoreNode.setScore(scoreNode.getSumScore()*scoreNode.getMaxIntensity()); // 70.66086547507055
-		//scoreNode.setScore(scoreNode.getSumScore()); // Accuracy: 70.61382878645344
-
+		IntensityID iid = scoreNode.getMaxIntensityID();
+		if (iid != null) {
+			if (scoreNode.getIndex() > iid.id) {
+				scoreNode.setScore(scoreNode.getSumScore()*iid.intensity);
+			}
+			else {
+				scoreNode.setScore(scoreNode.getSumScore());
+			}
+		}
+		else {
+			scoreNode.setScore(scoreNode.getSumScore()); // Accuracy: 70.61382878645344			
+		}
+//		scoreNode.setScore(scoreNode.getSumScore()*scoreNode.getMaxIntensity()); // 70.66086547507055
+//		scoreNode.setScore(scoreNode.getSumScore()); // Accuracy: 70.61382878645344
 		//scoreNode.setScore((scoreNode.getScore() + scoreNode.getMaxScore(depScoreMap, depNode))*scoreNode.getMaxIntensity()); // 69.81420507996238
 
 		//scoreNode.setScore((scoreNode.getScore() + scoreNode.getMaxScore(depScoreMap, depNode))); // 69.81420507996238
@@ -76,7 +87,7 @@ public class sentimentAnalyzer {
 		if (wordSentiments.containsKey(node.getLemma())) {
 			score = wordSentiments.get(node.getLemma());
 		}
-		ScoreNode sNode = new ScoreNode(node.getLemma(), score, intensity, node.getLabel());
+		ScoreNode sNode = new ScoreNode(node.getLemma(), score, intensity, node.getLabel(), node.getID());
 		return sNode;
 	}
 

@@ -28,6 +28,8 @@ import edu.emory.clir.clearnlp.dependency.DEPLibEn;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.reader.TSVReader;
+import edu.emory.clir.clearnlp.dependency.DEPLibEn;
+
 
 /**
  * called by Analyze
@@ -45,8 +47,17 @@ public class SentimentAnalyzer
 	private int count6;
 	private int count7;
 	private ScoresIntensifiers words;
+	private String label;
 	
 	
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
 	public SentimentAnalyzer(ScoresIntensifiers words) {
 		sentences = new ArrayList<>();
 		depScoreMap = new HashMap<>();
@@ -107,10 +118,16 @@ public class SentimentAnalyzer
 		// Find the absolute max score in the children, add it the parentScore (headScore) then find the greatest intensifier of the children and multiply it by the headscore 
 		// proceed to build up  - Johnny
 		
-		scoreNode.setScore(scoreNode.getSumScore()*scoreNode.getMaxIntensity()); // 70.66086547507055
+		if (scoreNode.getLabel().equals(label))
+			scoreNode.setScore(scoreNode.getSumScore()*3);
+////		
 
-//		scoreNode.setScore(scoreNode.getSumScore()); // Accuracy: 70.61382878645344
+//		if (scoreNode.getLabel().equals(DEPLibEn.DEP_ADVMOD)) // 1. 70.64910630291628 2. 70.64910630291628 
+//			scoreNode.setScore(scoreNode.getSumScore()*2);
+//		if (scoreNode.getLabel().equals(DEPLibEn.DEP_ADVCL)) // 1. 70.64910630291628 2. 70.64910630291628
+//			scoreNode.setScore(scoreNode.getSumScore()*2); // Accuracy: 2. 70.61382878645344
 
+		scoreNode.setScore(scoreNode.getSumScore()*scoreNode.getMaxIntensity()); // 1. 70.61382878645344
 //		scoreNode.setScore((scoreNode.getScore() + scoreNode.getMaxScore(depScoreMap, depNode))*scoreNode.getMaxIntensity()); // 68.05032925682032
 
 //		scoreNode.setScore((scoreNode.getScore() + scoreNode.getMaxScore(depScoreMap, depNode))); // 68.03857008466603

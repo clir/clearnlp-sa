@@ -11,9 +11,11 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 import edu.emory.clir.clearnlp.dependency.DEPLibEn;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
@@ -27,7 +29,7 @@ public class Analyze {
 	private static double accuracy = 70.61382878645345;
 	private static boolean improved = false;
 	private static Writer trainWriter;
-	private static int right = 6005;
+	private static int right = 0;
 	public Analyze() throws FileNotFoundException {
 		parser = new Parse();
 		sentimentAnalyzer = new SentimentAnalyzer(parser.getScoresIntensifiers());
@@ -44,9 +46,9 @@ public class Analyze {
 
 		List<String> testLabels = new ArrayList<>();
 		testLabels.add(DEPLibEn.DEP_NEG);
-		testLabels.add(DEPLibEn.DEP_ADVMOD);
-		testLabels.add(DEPLibEn.DEP_AMOD);
-		testLabels.add(DEPLibEn.DEP_CC);
+//		testLabels.add(DEPLibEn.DEP_ADVMOD);
+//		testLabels.add(DEPLibEn.DEP_AMOD);
+//		testLabels.add(DEPLibEn.DEP_CC);
 //		analyze.sentimentAnalyzer.getLabelIntensity().put("neg", 1d);
 //		analyze.sentimentAnalyzer.getLabelIntensity().put("cc", 1d);
 //		analyze.sentimentAnalyzer.getLabelIntensity().put("advmod", 1d);
@@ -57,13 +59,21 @@ public class Analyze {
 
 		analyze.sentimentAnalyzer.readDepTree(new FileInputStream(trainDepTrees), analyze.scoresIntensifiers.getWordBucket());
 //		Map<String, Double> copyIntensifierWords =  new HashMap<>(analyze.scoresIntensifiers.getIntensifierWords());
-		for (DEPNode depNode : analyze.sentimentAnalyzer.getDepScoreMap().keySet()) {
-			for (String label : testLabels) {
-				if (depNode.getLabel().equals(label)) {
-					for (double test = -5; test <= 5 ; test+=.2) {
+		Set<DEPNode> depNodes = analyze.sentimentAnalyzer.getDepScoreMap().keySet();
+		Set<DEPNode> negs = new HashSet<>();
+		for (DEPNode neg : depNodes) {
+			if (neg.getLabel().equals(DEPLibEn.DEP_CC)) {
+				negs.add(neg);
+			}
+		}
+		  
+		for (DEPNode neg : negs) {
+//			for (String label : testLabels) {
+//				if (depNode.getLabel().equals(label)) {
+					for (double test = -3; test <= 3 ; test+=.5) {
 						improved = false;
 //						analyze.scoresIntensifiers.setIntensifierWords(copyIntensifierWords);
-						analyze.scoresIntensifiers.getIntensifierWords().put(depNode.getLemma(), test);
+						analyze.scoresIntensifiers.getIntensifierWords().put(neg.getLemma(), test);
 
 //						System.out.println("part1");
 
@@ -146,12 +156,12 @@ public class Analyze {
 						//		System.out.println("min " + min + " max " + max);
 //						System.out.println(correct);
 //						double newAccuracy = 100d*correct/(correct+incorrect);
+						String cbuf = "Right: " + right + " lemma: " + neg.getWordForm() + " test: " + test;
+						System.out.println(cbuf);
 						if (correct > right) {
 							right = correct;
 							improved = true;
 //							accuracy = newAccuracy;
-							String cbuf = "Right: " + right + " lemma: " + depNode.getLemma() + " test: " + test;
-							System.out.println(cbuf);
 							Analyze.trainWriter.write(cbuf);
 							Analyze.trainWriter.flush();
 						}
@@ -168,11 +178,11 @@ public class Analyze {
 						s.close();
 					}
 					if (improved == false) {
-						analyze.scoresIntensifiers.getIntensifierWords().remove(depNode.getLemma());
+						analyze.scoresIntensifiers.getIntensifierWords().remove(neg.getLemma());
 					}
 				}
-			}
-		}
+//			}
+//		}
 		System.out.println("Done");
 		Analyze.trainWriter.close();
 	}
