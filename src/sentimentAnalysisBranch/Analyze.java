@@ -34,12 +34,24 @@ public class Analyze {
 		analyze.getSentDS().readIntensifiers();
 		analyze.getSentDS().readStanfordResults();
 		analyze.getSentDS().readWordSentiments();
+		//		analyze.getSentDS().intensifiers.put("not", -1.1d);
+		//		analyze.getSentDS().intensifiers.put("but", 0d);
+		//		analyze.getSentDS().intensifiers.put("neither", -.5d);
+		//		analyze.getSentDS().intensifiers.put("yet", 3.5d);
+		//		analyze.getSentDS().intensifiers.put("very", 1.5d);
+		//		analyze.getSentDS().intensifiers.put("really", 1.5d);
+		//		analyze.getSentDS().intensifiers.put("super", 1d);
+		//		analyze.getSentDS().intensifiers.put("extremely", 3.5d);
 
 		List<ScoreNode> temp;
-		
-		temp = analyze.getAnalyzer().calculateScores(new FileInputStream(trainDepTrees),analyze.getSentDS().getWordSentiments(),analyze.getSentDS().getLabelIntensifier(),analyze.getSentDS().getIntensifiers());		
-		analyze.printResults(new File(trainFile), temp);
 
+		for (int i=-40; i <= 40; i+=2) {
+
+			analyze.getSentDS().intensifiers.put("not", i/10d);
+			temp = analyze.getAnalyzer().calculateScores(new FileInputStream(trainDepTrees),analyze.getSentDS().getWordSentiments(),analyze.getSentDS().getLabelIntensifier(),analyze.getSentDS().getIntensifiers());		
+					analyze.printResults(new File(trainFile), temp);
+			System.out.println(i/10d);
+		}
 
 
 	}
@@ -47,7 +59,7 @@ public class Analyze {
 
 
 	public boolean printResults(File in, List<ScoreNode> results) throws FileNotFoundException{
-//		Scanner read = new Scanner(in);
+		//		Scanner read = new Scanner(in);
 		Deque<ScoreNode> depQueue = new ArrayDeque<>();
 		List<Double> stanfordResults = getSentDS().getStanfordResults();
 		//double min = 0;
@@ -56,38 +68,38 @@ public class Analyze {
 		int incorrect = 0;
 		boolean check = false;
 		for( int i = 0; i<results.size(); i++){
-			if (stanfordResults.get(i) > 0 && results.get(i).getScore() <= 0) {
-			check = true;
-			System.out.println();
-			System.out.println(i+1);
-			System.out.print("Head: " + results.get(i).getLemma() + " Final Intensity " + results.get(i).getMaxIntensity() + " Calculated Score "+ results.get(i).getScore() + " Stanford core: " + stanfordResults.get(i)+ "\n");
-			}
-			
+//			if (stanfordResults.get(i) > 0 && results.get(i).getScore() <= 0) {
+//				check = true;
+//				System.out.println();
+//				System.out.println(i+1);
+//				System.out.print("Head: " + results.get(i).getLemma() + " Final Intensity " + results.get(i).getMaxIntensity() + " Calculated Score "+ results.get(i).getScore() + " Stanford core: " + stanfordResults.get(i)+ "\n");
+//			}
+//
+//			if(check){
+//				System.out.println("Root: " + results.get(i).getLemma()+ " Intensity " + getSentDS().getIntensifiers().get(results.get(i)) +" Sentiment Score: "  +getSentDS().getWordSentiments().get(results.get(i).getLemma()));
+//				List<ScoreNode> dependents = results.get(i).getDependents();
+//				depQueue.addAll(dependents);
+//
+//				while (!depQueue.isEmpty()) {
+//					ScoreNode dependent = depQueue.poll();
+//					System.out.println("Word: "+dependent.getLemma() + " Intensity: " + dependent.getMaxIntensity() + " Sentiment Score: "+ dependent.getScore());
+//
+//					for (ScoreNode dNode : dependent.getDependents()) {
+//						depQueue.addFirst(dNode);
+//					}
+//				}
+//
+//				check = false;
+//			}
 			if (stanfordResults.get(i) < 0 && results.get(i).getScore() < 0)
 				correct++;
 			else if (stanfordResults.get(i) >= 0 && results.get(i).getScore() >= 0)
 				correct++;
 			else {
-			incorrect++;
+				incorrect++;
 			}
-			if(check){
-			System.out.println("Root: " + results.get(i).getLemma()+ " Intensity " + getSentDS().getIntensifiers().get(results.get(i)) +" Sentiment Score: "  +getSentDS().getWordSentiments().get(results.get(i).getLemma()));
-			List<ScoreNode> dependents = results.get(i).getDependents();
-			depQueue.addAll(dependents);
-
-			while (!depQueue.isEmpty()) {
-				ScoreNode dependent = depQueue.poll();
-				System.out.println("Word: "+dependent.getLemma() + " Intensity: " + dependent.getMaxIntensity() + " Sentiment Score: "+ dependent.getScore());
-
-				for (ScoreNode dNode : dependent.getDependents()) {
-					depQueue.addFirst(dNode);
-				}
-			}
-			
-			check = false;
 		}
-		}
-		
+
 		//System.out.println();
 		//max = Math.max(max, results.get(i).getScore());
 		//min = Math.min(min, results.get(i).getScore());
@@ -109,14 +121,14 @@ public class Analyze {
 		double newAccuracy = 100d*correct/(correct+incorrect);
 		System.out.println("Accuracy:" +newAccuracy);
 		if (correct > totalCorrect) {
-		totalCorrect = correct;
-		improved = true;
-		//accuracy = newAccuracy;
+			totalCorrect = correct;
+			improved = true;
+			//accuracy = newAccuracy;
 		}
 		System.out.println("Finished");
 		return improved;
-		
-		}		
+
+	}		
 	public sentimentDS getSentDS(){
 		return this.sentDS;
 	}

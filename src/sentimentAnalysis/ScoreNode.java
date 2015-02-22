@@ -16,13 +16,15 @@ public class ScoreNode {
 	private ScoreNode parent;
 	private String label;
 	private Map<String, Integer> labelCounts;
+	private int index;
 	
-	public ScoreNode(String lemma, double score, double intensity, String label) {
+	public ScoreNode(String lemma, double score, double intensity, String label, int index) {
 		this.lemma = lemma;
 		this.score = score;
 		this.intensity = intensity;
 		this.label = label;
 		this.labelCounts = new HashMap<>();
+		this.index = index;
 	}
 	
 	public ScoreNode(ScoreNode node) {
@@ -70,6 +72,19 @@ public class ScoreNode {
 		}
 //		System.out.println(maxIntensity);
 		return maxIntensity;
+	}
+	
+	public IntensityID getMaxIntensityID() { 
+		IntensityID iid = null;
+		double maxIntensity = 1;
+		for(int i = 0; i < dependents.size(); i++) {
+			Double childIntensity = dependents.get(i).getIntensity();
+			if (Math.abs(childIntensity) > Math.abs(maxIntensity)) { 
+				maxIntensity = childIntensity;
+				iid = new IntensityID(maxIntensity, dependents.get(i).getIndex());
+			}
+		}
+		return iid;
 	}
 	public double getSumIntensity() {
 		double maxIntensity = this.intensity;
@@ -161,5 +176,12 @@ public class ScoreNode {
 
 	public void setLabelCounts(Map<String, Integer> labelCounts) {
 		this.labelCounts = labelCounts;
+	}
+	public int getIndex() {
+		return index;
+	}
+	
+	public void setIndex(int index) {
+		this.index = index;
 	}
 }

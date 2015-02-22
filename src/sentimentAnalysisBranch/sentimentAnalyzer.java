@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import parseCorpus.ScoresIntensifiers;
+import sentimentAnalysis.IntensityID;
 import edu.emory.clir.clearnlp.dependency.DEPNode;
 import edu.emory.clir.clearnlp.dependency.DEPTree;
 import edu.emory.clir.clearnlp.reader.TSVReader;
@@ -38,8 +38,6 @@ public class sentimentAnalyzer {
 		}
 		return temp;
 	}
-
-
 
 	private ScoreNode analyzeHead(DEPNode depNode,Map<String, Double> wordSentiments,Map<String, Double> labelIntensifiers, Map<String, Double> wordIntensifiers) {
 		ScoreNode scoreNode = getNode(depNode, wordSentiments,labelIntensifiers, wordIntensifiers);

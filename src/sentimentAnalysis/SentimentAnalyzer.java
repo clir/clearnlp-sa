@@ -117,17 +117,30 @@ public class SentimentAnalyzer
 		scoreNode.setDependents(childrenNodes);
 		// Find the absolute max score in the children, add it the parentScore (headScore) then find the greatest intensifier of the children and multiply it by the headscore 
 		// proceed to build up  - Johnny
+	
+		IntensityID iid = scoreNode.getMaxIntensityID();
+		if (iid != null) {
+			if (scoreNode.getIndex() > iid.id) {
+				scoreNode.setScore(scoreNode.getSumScore()*iid.intensity);
+			}
+			else {
+				scoreNode.setScore(scoreNode.getSumScore());
+			}
+		}
+		else {
+			scoreNode.setScore(scoreNode.getSumScore()); // Accuracy: 70.61382878645344			
+		}
 		
-		if (scoreNode.getLabel().equals(label))
-			scoreNode.setScore(scoreNode.getSumScore()*3);
-////		
+//		if (scoreNode.getLabel().equals(label))
+//			scoreNode.setScore(scoreNode.getSumScore()*3);
+//
 
 //		if (scoreNode.getLabel().equals(DEPLibEn.DEP_ADVMOD)) // 1. 70.64910630291628 2. 70.64910630291628 
 //			scoreNode.setScore(scoreNode.getSumScore()*2);
 //		if (scoreNode.getLabel().equals(DEPLibEn.DEP_ADVCL)) // 1. 70.64910630291628 2. 70.64910630291628
 //			scoreNode.setScore(scoreNode.getSumScore()*2); // Accuracy: 2. 70.61382878645344
 
-		scoreNode.setScore(scoreNode.getSumScore()*scoreNode.getMaxIntensity()); // 1. 70.61382878645344
+//		scoreNode.setScore(scoreNode.getSumScore()*scoreNode.getMaxIntensity()); // 1. 70.61382878645344
 //		scoreNode.setScore((scoreNode.getScore() + scoreNode.getMaxScore(depScoreMap, depNode))*scoreNode.getMaxIntensity()); // 68.05032925682032
 
 //		scoreNode.setScore((scoreNode.getScore() + scoreNode.getMaxScore(depScoreMap, depNode))); // 68.03857008466603
@@ -147,7 +160,7 @@ public class SentimentAnalyzer
 		if (map.containsKey(node.getLemma())) {
 			score = map.get(node.getLemma());
 		}
-		ScoreNode sNode = new ScoreNode(node.getLemma(), score, intensity, node.getLabel());
+		ScoreNode sNode = new ScoreNode(node.getLemma(), score, intensity, node.getLabel(), node.getID());
 		return sNode;
 	}
 	

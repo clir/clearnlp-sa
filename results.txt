@@ -1,1 +1,0 @@
-Right: 0 lemma: and test: -3.0
