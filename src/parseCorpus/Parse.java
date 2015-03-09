@@ -26,25 +26,24 @@ public class Parse {
 	}
 
 	public void parse() throws Exception {
-		//		String devFile = "src/Stanford Sentiment/trees/dev.txt";
-		String trainFile = "src/Stanford Sentiment/trees/train.txt";
+		String devFile = "src/Stanford Sentiment/trees/dev.txt";
+		String trainFile = "src/Stanford Sentiment/trees/test.txt";
 		String rawscores = "src/Stanford Sentiment/stanfordSentimentTreebankRaw/rawscores_exp12.txt";
 		String sentexp = "src/Stanford Sentiment/stanfordSentimentTreebankRaw/sentlex_exp12.txt";
 		String intensifierwords = "intensifiers.txt";
 		//trimWords(new FileInputStream(trainFile));
-		parseStanfordTrees(scoresIntensifiers, new FileInputStream(trainFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
+		//parseStanfordTrees(scoresIntensifiers, new FileInputStream(trainFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
 		//		parseStanfordTrees(scoresIntensifiers, new FileInputStream(devFile), "([(][0-9][\\s]([a-zA-Z]|\\W)+\\b[)])");
 		//		parseSubjectivity(scoresIntensifiers);
 		parseStanfordScores(new FileInputStream(trainFile));
 		//		parseStanfordScores(new FileInputStream(devFile));
-		parseRawScores(new FileInputStream(rawscores));
-		parseSentimentExpressions(new FileInputStream(sentexp));
+		//parseRawScores(new FileInputStream(rawscores));
+		//parseSentimentExpressions(new FileInputStream(sentexp));
 		//trimKey(new FileInputStream("src/Stanford Sentiment/stanfordSentimentTreebank/datasetSplit.txt"));
 		//writeSet(new File("src/Stanford Sentiment/stanfordSentimentTreebank/datasetSentences.txt"));
-		parseIntensifiers(new FileInputStream(intensifierwords));
-		scoresIntensifiers.putInBuckets();
+		//parseIntensifiers(new FileInputStream(intensifierwords));
+		//scoresIntensifiers.putInBuckets();
 	}
-
 
 
 	private void parseIntensifiers(FileInputStream in) throws IOException {
@@ -63,15 +62,18 @@ public class Parse {
 
 	private void parseStanfordScores(FileInputStream in) throws IOException{
 		Scanner read = new Scanner(in);
+		Writer devWriter = new BufferedWriter( new OutputStreamWriter(new FileOutputStream(new File("trainResults.txt"))));
 		int count = 0;
-		while(read.hasNext() && count < 8504){
+		while(read.hasNext()){
 			String s = read.nextLine();
 			int number = Integer.parseInt(s.substring(1, 2));
+			devWriter.write(number);
 			//			System.out.println(number);
 			double normalized = (number/2d)-1;
 			scoresIntensifiers.addStanfordScore(normalized);
 			count++;
 		}
+		devWriter.close();
 		read.close();
 	}
 	private void parseSentimentExpressions(FileInputStream in) throws IOException {
