@@ -96,32 +96,6 @@ public class SentimentAnalyzer
 		sentences.add(headNode);
 	}
 	
-	public double recalculateScore(ScoreNode root,Map<String,Double> map){
-		
-		DEPNode depNode = getDepNode(root);
-		ScoreNode temp = analyzeHead(depNode,map);
-		System.out.println(depNode.getLemma());
-		for(DEPNode dNode:depNode.getDependentList()){
-			System.out.println(dNode.getLemma());
-			
-		}
-		return temp.getScore();
-	}
-	
-	public DEPNode getDepNode(ScoreNode currNode){
-		for(Map.Entry<DEPNode, ScoreNode> map : depScoreMap.entrySet()){
-			if(map.getValue().equals(currNode)){
-				return map.getKey();
-			}
-		}
-		return null;
-	}
-	
-	
-	
-	
-	
-	
 	private ScoreNode analyzeHead(DEPNode depNode, Map<String, Double> map)
 	{
 		//Get the ScoreNode of the current DEPNode passed 
@@ -165,7 +139,8 @@ public class SentimentAnalyzer
 //			scoreNode.setScore(scoreNode.getSumScore()*2);
 //		if (scoreNode.getLabel().equals(DEPLibEn.DEP_ADVCL)) // 1. 70.64910630291628 2. 70.64910630291628
 //			scoreNode.setScore(scoreNode.getSumScore()*2); // Accuracy: 2. 70.61382878645344
-		scoreNode.setScore(scoreNode.getSumScore()*scoreNode.getMaxIntensity()); // 1. 70.61382878645344
+
+//		scoreNode.setScore(scoreNode.getSumScore()*scoreNode.getMaxIntensity()); // 1. 70.61382878645344
 //		scoreNode.setScore((scoreNode.getScore() + scoreNode.getMaxScore(depScoreMap, depNode))*scoreNode.getMaxIntensity()); // 68.05032925682032
 
 //		scoreNode.setScore((scoreNode.getScore() + scoreNode.getMaxScore(depScoreMap, depNode))); // 68.03857008466603

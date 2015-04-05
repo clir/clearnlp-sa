@@ -63,13 +63,6 @@ public class ScoreNode {
 		return maxScore;
 	}
 	
-	public boolean equals(ScoreNode o){
-		if(this.index==o.index && this.label==o.label && this.labelCounts == o.labelCounts){
-			return true;
-		}
-		return false;
-	}
-	
 	public double getMaxIntensity() {
 		double maxIntensity = 1;
 		for(int i = 0; i < dependents.size(); i++) {
